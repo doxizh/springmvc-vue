@@ -22,7 +22,6 @@
 <script>
   import HeaderTop from '@/components/HeaderTop'
   import AsideMenu from '@/components/AsideMenu'
-  import {mapState,mapMutations} from 'vuex'
   export default {
     name: "home",
     data() {
@@ -32,24 +31,11 @@
       HeaderTop,
       AsideMenu
     },
-    computed:{
-      ...mapState([
-        'num'
-      ])
-    },
     created() {
-      this.findUserAll();
-      this.addNum();
+
     },
     methods:{
-      ...mapMutations([
-        'addNum'
-      ]),
-      findUserAll(){
-        this.$axios.post(this.$proxy+this.$apis.findUserAll).then(data=>{
-          // console.log(data);
-        })
-      },
+
     }
   }
 </script>

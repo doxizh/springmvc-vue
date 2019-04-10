@@ -1,5 +1,7 @@
 package example.dao.impl;
 
+import com.github.pagehelper.PageHelper;
+import com.github.pagehelper.PageInfo;
 import example.dao.UserDao;
 import example.pojo.User;
 import org.apache.ibatis.session.SqlSession;
@@ -52,7 +54,7 @@ public class UserDaoImpl implements UserDao {
     }
 
     @Override
-    public List<User> findUserAll() {
+    public PageInfo<User> findUserAll(int pageNum,int pageSize) {
         SqlSession sqlSession = null;
         try {
             sqlSession = getSqlSessionFactory().openSession();
@@ -60,9 +62,11 @@ public class UserDaoImpl implements UserDao {
             e.printStackTrace();
         }
         assert sqlSession != null;
+        PageHelper.startPage(pageNum,pageSize);
         List<User> list= sqlSession.selectList("test.findUserAll");
         sqlSession.close();
-        return list;
+
+        return new PageInfo<>(list);
     }
 
     @Override
@@ -93,5 +97,26 @@ public class UserDaoImpl implements UserDao {
         sqlSession.commit();
         sqlSession.close();
         return num;
+    }
+
+    @Override
+    public Boolean batchAddUser() {
+        SqlSession sqlSession = null;
+        try {
+            sqlSession = getSqlSessionFactory().openSession();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        assert sqlSession != null;
+
+        for(int i=1;i<101;i++){
+            User user= new User();
+            user.setPassword("123456");
+            user.setName("测试".concat(String.valueOf(i)));
+            sqlSession.insert("test.register",user);
+        }
+        sqlSession.commit();
+        sqlSession.close();
+        return true;
     }
 }

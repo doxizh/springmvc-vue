@@ -19,7 +19,7 @@
         SELECT * FROM user WHERE name = #{value}
     </select>
     <select id="findUserAll" resultType="user">
-        SELECT * FROM user
+        SELECT id,name FROM user
     </select>
     <select id="register" parameterType="user" resultType="int">
         INSERT INTO user (name,password) VALUES (#{name},#{password});

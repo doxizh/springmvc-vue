@@ -1,4 +1,5 @@
 import Axios from 'axios';
+import Qs from 'qs';
 const Common = {
   proxy: process.env.NODE_ENV === 'production' ? '' : '/api',
   apis: {
@@ -9,8 +10,10 @@ const Common = {
     logout: '/logout',
     register: '/register',
     updatePassword: '/updatePassword',
+    batchAddUser: '/batchAddUser',
   },
   axios: Axios,
+  qs: Qs,
   async isLogin(){
     return await Axios.post(Common.proxy+Common.apis.isLogin)
   }

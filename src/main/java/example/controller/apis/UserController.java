@@ -1,5 +1,6 @@
 package example.controller.apis;
 
+import com.github.pagehelper.PageInfo;
 import example.controller.CheckIsLogin;
 import example.dao.impl.UserDaoImpl;
 import example.pojo.User;
@@ -36,14 +37,18 @@ public class UserController {
     }
     @RequestMapping("/findUserAll")
     @ResponseBody
-    public ModelResult findUserAll(HttpServletRequest request) throws IOException {
+    public ModelResult findUserAll(HttpServletRequest request,int pageSize,int pageNum) throws IOException {
         Boolean isLogin=new CheckIsLogin(request.getSession()).CheckIsLogin();
         if(!isLogin){
             return ModelResult.newError("401",false);
         }
         UserDaoImpl usertest=new UserDaoImpl();
-        List<User> list=usertest.findUserAll();
-        return ModelResult.newSuccess(list);
+        PageInfo<User> list=usertest.findUserAll(pageNum,pageSize);
+        list.getList();
+        Map<String,Object> map = new HashMap<>();
+        map.put("total",list.getTotal());
+        map.put("list",list.getList());
+        return ModelResult.newSuccess(map);
     }
     @RequestMapping("/isLogin")
     @ResponseBody
@@ -143,5 +148,13 @@ public class UserController {
         }else {
             return ModelResult.newError("403","用户不存在",false);
         }
+    }
+
+    @RequestMapping("/batchAddUser")
+    @ResponseBody
+    public ModelResult batchAddUser(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        UserDaoImpl usertest=new UserDaoImpl();
+        usertest.batchAddUser();
+        return ModelResult.newSuccess(true);
     }
 }
