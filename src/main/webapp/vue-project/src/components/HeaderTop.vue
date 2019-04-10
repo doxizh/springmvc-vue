@@ -1,9 +1,9 @@
 <template>
   <div class="header-top">
     <div class="logo-box"></div>
-    <el-menu :default-active="activeIndex" @select="handleSelect" mode="horizontal" text-color="#fff" active-text-color="#ffd04b">
+    <!--<el-menu :default-active="activeIndex" @select="handleSelect" mode="horizontal" text-color="#fff" active-text-color="#ffd04b">
       <el-menu-item index="1">首页</el-menu-item>
-    </el-menu>
+    </el-menu>-->
     <div class="user-box">
       <el-dropdown @command="handleCommand">
         <span class="el-dropdown-link">
@@ -149,6 +149,7 @@
     background: #545c64;
     height: 100%;
     display: flex;
+    justify-content: space-between;
   }
   .logo-box {
     width: 200px;

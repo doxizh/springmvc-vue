@@ -12,6 +12,7 @@ import Plugin from './js/plugin'
 Vue.use(Plugin);
 import store from './store'
 import axios from 'axios'
+import 'font-awesome/css/font-awesome.min.css'
 // http request 拦截器
 axios.interceptors.request.use(
   config => {

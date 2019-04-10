@@ -67,4 +67,9 @@
   .el-aside{
     background: #545c64;
   }
+  .el-main{
+    padding: 0;
+    background-color: #f8f9fc;
+    display: flex;
+  }
 </style>
