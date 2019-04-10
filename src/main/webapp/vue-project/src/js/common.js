@@ -13,6 +13,7 @@ const Common = {
     addUser: '/addUser',
     batchAddUser: '/batchAddUser',
     searchUserByName: '/searchUserByName',
+    deleteUser: '/deleteUser',
     batchDeleteUser: '/batchDeleteUser',
   },
   axios: Axios,

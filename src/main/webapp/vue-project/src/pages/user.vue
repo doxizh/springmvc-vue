@@ -45,6 +45,14 @@
           property="name"
           label="用户名">
         </el-table-column>
+        <el-table-column
+          label="操作">
+          <template slot-scope="scope">
+            <el-button @click="handleClick(scope.row)" type="text" size="small">查看</el-button>
+            <el-button type="text" size="small">编辑</el-button>
+            <el-button type="text" size="small" @click="deleteUser(scope.row)">删除</el-button>
+          </template>
+        </el-table-column>
       </el-table>
       <el-pagination v-if="total>pageSize"
         background
@@ -112,6 +120,34 @@
       this.findUserAll();
     },
     methods:{
+      deleteUser(row){
+        this.$confirm('确认删除该用户吗?', '提示', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning'
+        }).then(() => {
+          let postData={
+            id:row.id
+          };
+          this.$axios.post(this.$proxy+this.$apis.deleteUser,postData).then(data=>{
+            if(data.data.success){
+              this.$message({
+                type: 'success',
+                message: '删除成功!'
+              });
+              this.pageNum=1;
+              this.findUserAll();
+            }else {
+
+            }
+          })
+        }).catch(() => {
+
+        });
+      },
+      handleClick(row){
+        console.log(row);
+      },
       handleSizeChange(val) {
         this.pageSize=val;
         this.pageNum=1;

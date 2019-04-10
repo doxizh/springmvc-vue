@@ -15,5 +15,6 @@ public interface UserDao {
     public int updatePassword(User user);
     public Boolean batchAddUser();
     public PageInfo<User> searchUserByName(String name,int pageSize);
+    public int deleteUser(int id);
     public int batchDeleteUser(List list);
 }

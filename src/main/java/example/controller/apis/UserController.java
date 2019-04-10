@@ -194,6 +194,15 @@ public class UserController {
         return ModelResult.newSuccess(result);
     }
 
+    @RequestMapping("/deleteUser")
+    @ResponseBody
+    public ModelResult deleteUser(HttpServletRequest request, HttpServletResponse response,@RequestBody Map map) throws IOException {
+        int id = (int) map.get("id");
+        UserDaoImpl usertest=new UserDaoImpl();
+        int num=usertest.deleteUser(id);
+        return num>=0?ModelResult.newSuccess(true):ModelResult.newError("删除失败");
+    }
+
     @RequestMapping("/batchDeleteUser")
     @ResponseBody
     public ModelResult batchDeleteUser(HttpServletRequest request, HttpServletResponse response,@RequestBody Map map) throws IOException {

@@ -137,6 +137,21 @@ public class UserDaoImpl implements UserDao {
     }
 
     @Override
+    public int deleteUser(int id) {
+        SqlSession sqlSession = null;
+        try {
+            sqlSession = getSqlSessionFactory().openSession();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        assert sqlSession != null;
+        int num= sqlSession.delete("test.deleteUser",id);
+        sqlSession.commit();
+        sqlSession.close();
+        return num;
+    }
+
+    @Override
     public int batchDeleteUser(List list) {
         SqlSession sqlSession = null;
         try {
