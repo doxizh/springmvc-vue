@@ -14,6 +14,7 @@ const Common = {
     batchAddUser: '/batchAddUser',
     searchUserByName: '/searchUserByName',
     deleteUser: '/deleteUser',
+    editUser: '/editUser',
     batchDeleteUser: '/batchDeleteUser',
   },
   axios: Axios,
