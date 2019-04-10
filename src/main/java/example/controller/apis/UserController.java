@@ -211,4 +211,14 @@ public class UserController {
         int num=usertest.batchDeleteUser(list);
         return num>=0?ModelResult.newSuccess(true):ModelResult.newError("删除失败");
     }
+
+    @RequestMapping("/editUser")
+    @ResponseBody
+    public ModelResult editUser(HttpServletRequest request, HttpServletResponse response,@RequestBody Map map) throws IOException {
+        int id = (int) map.get("id");
+        String name = (String) map.get("name");
+        UserDaoImpl usertest=new UserDaoImpl();
+        int num=usertest.editUser(id,name);
+        return num>=0?ModelResult.newSuccess(true):ModelResult.newError("删除失败");
+    }
 }

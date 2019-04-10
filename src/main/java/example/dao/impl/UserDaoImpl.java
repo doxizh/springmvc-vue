@@ -7,7 +7,9 @@ import example.pojo.User;
 import org.apache.ibatis.session.SqlSession;
 
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import static example.dao.ConnectSql.getSqlSessionFactory;
 
@@ -161,6 +163,24 @@ public class UserDaoImpl implements UserDao {
         }
         assert sqlSession != null;
         int num= sqlSession.delete("test.batchDeleteUser",list);
+        sqlSession.commit();
+        sqlSession.close();
+        return num;
+    }
+
+    @Override
+    public int editUser(int id,String name) {
+        SqlSession sqlSession = null;
+        try {
+            sqlSession = getSqlSessionFactory().openSession();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        assert sqlSession != null;
+        Map<String,Object> map=new HashMap<>();
+        map.put("id",id);
+        map.put("name",name);
+        int num= sqlSession.update("test.editUser",map);
         sqlSession.commit();
         sqlSession.close();
         return num;

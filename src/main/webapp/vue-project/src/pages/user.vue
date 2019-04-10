@@ -49,7 +49,7 @@
           label="操作">
           <template slot-scope="scope">
             <el-button @click="handleClick(scope.row)" type="text" size="small">查看</el-button>
-            <el-button type="text" size="small">编辑</el-button>
+            <el-button @click="openEditDialog(scope.row)" type="text" size="small">编辑</el-button>
             <el-button type="text" size="small" @click="deleteUser(scope.row)">删除</el-button>
           </template>
         </el-table-column>
@@ -77,6 +77,17 @@
       <el-button type="primary" @click="addUser" :loading="addUserDialogFormLoading">{{addUserDialogFormLoading?'请稍后':'确 定'}}</el-button>
     </div>
   </el-dialog>
+  <el-dialog title="编辑用户" :visible.sync="editUserDialog">
+    <el-form status-icon :model="editUserDialogForm" ref="editUserDialogForm" :rules="editUserDialogRules">
+      <el-form-item label="用户名" label-width="5em" prop="name">
+        <el-input v-model="editUserDialogForm.name" autocomplete="off"></el-input>
+      </el-form-item>
+    </el-form>
+    <div slot="footer" class="dialog-footer">
+      <el-button @click="editUserDialog=false">取 消</el-button>
+      <el-button type="primary" @click="editUser" :loading="editUserDialogLoading">{{editUserDialogLoading?'请稍后':'确 定'}}</el-button>
+    </div>
+  </el-dialog>
 </div>
 </template>
 
@@ -92,34 +103,75 @@
         }
       };
       return {
-        form:{
-          name:''
-        },
         userData:[],
         pageSize:15,
         pageSizes:[15, 30, 45, 60],
         pageNum:1,
         total:0,
         addUserDialog:false,
+        editUserDialog:false,
         controlBarForm:{
           name:''
         },
         addUserDialogForm:{
           name:'',
         },
+        editUserDialogForm:{
+          name:'',
+        },
         addUserDialogFormLoading:false,
+        editUserDialogLoading:false,
         addUserDialogRules:{
           name:[
             {validator:checkName,trigger:'blur'}
           ]
         },
-        selectedItem:[]
+        editUserDialogRules:{
+          name:[
+            {validator:checkName,trigger:'blur'}
+          ]
+        },
+        selectedItems:[],
+        selectedItem:{},
       }
     },
     created() {
       this.findUserAll();
     },
     methods:{
+      openEditDialog(row){
+        this.selectedItem=row;
+        this.editUserDialogForm.name=row.name;
+        this.editUserDialog=true;
+      },
+      editUser(){
+        this.$refs.editUserDialogForm.validate(valid=> {
+          if (valid) {
+            let postData = {
+              id: this.selectedItem.id,
+              name: this.editUserDialogForm.name
+            };
+            this.editUserDialogLoading=true;
+            this.$axios.post(this.$proxy + this.$apis.editUser, postData).then(data => {
+              this.editUserDialogLoading=false;
+              if (data.data.success) {
+                this.$message({
+                  type: 'success',
+                  message: '编辑成功!'
+                });
+                this.editUserDialog=false;
+                this.pageNum = 1;
+                this.findUserAll();
+              } else {
+                this.$message({
+                  type: 'error',
+                  message: data.data.msg
+                });
+              }
+            })
+          }
+        })
+      },
       deleteUser(row){
         this.$confirm('确认删除该用户吗?', '提示', {
           confirmButtonText: '确定',
@@ -228,15 +280,15 @@
         this.selectedItem=val;
       },
       batchDelete(){
-        if(this.selectedItem.length>0){
+        if(this.selectedItems.length>0){
           this.$confirm('确认删除所选用户吗?', '提示', {
             confirmButtonText: '确定',
             cancelButtonText: '取消',
             type: 'warning'
           }).then(() => {
             let ids=[];
-            for (let i = 0; i <this.selectedItem.length ; i++) {
-              ids.push(this.selectedItem[i].id);
+            for (let i = 0; i <this.selectedItems.length ; i++) {
+              ids.push(this.selectedItems[i].id);
             }
             let postData={
               ids:ids
