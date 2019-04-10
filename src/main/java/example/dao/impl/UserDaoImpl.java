@@ -119,4 +119,35 @@ public class UserDaoImpl implements UserDao {
         sqlSession.close();
         return true;
     }
+
+    @Override
+    public PageInfo<User> searchUserByName(String name,int pageSize) {
+        SqlSession sqlSession = null;
+        try {
+            sqlSession = getSqlSessionFactory().openSession();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        assert sqlSession != null;
+        PageHelper.startPage(1,pageSize);
+        List<User> list= sqlSession.selectList("test.searchUserByName",name);
+        sqlSession.close();
+
+        return new PageInfo<>(list);
+    }
+
+    @Override
+    public int batchDeleteUser(List list) {
+        SqlSession sqlSession = null;
+        try {
+            sqlSession = getSqlSessionFactory().openSession();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        assert sqlSession != null;
+        int num= sqlSession.delete("test.batchDeleteUser",list);
+        sqlSession.commit();
+        sqlSession.close();
+        return num;
+    }
 }

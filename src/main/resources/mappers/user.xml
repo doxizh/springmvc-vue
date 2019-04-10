@@ -21,13 +21,22 @@
     <select id="findUserAll" resultType="user">
         SELECT id,name FROM user
     </select>
-    <select id="register" parameterType="user" resultType="int">
+    <insert id="register" parameterType="user">
         INSERT INTO user (name,password) VALUES (#{name},#{password});
-    </select>
-    <select id="updatePassword" parameterType="user" resultType="int">
+    </insert>
+    <update id="updatePassword" parameterType="user">
         UPDATE user SET password=#{password} WHERE name = #{name}
+    </update>
+    <select id="searchUserByName" parameterType="String" resultType="user">
+        SELECT id,name FROM user WHERE name LIKE "%"#{name}"%"
     </select>
-    <!--<select id="addUser" parameterType="user">
-        insert into user (name,password) values (#{})
-    </select>-->
+    <delete id="batchDeleteUser" parameterType="List" >
+        DELETE FROM user WHERE id in
+        <foreach collection="list"  item="item" open="(" separator="," close=")"  >
+            #{item}
+        </foreach>
+    </delete>
+    <delete id="deleteUser" parameterType="int" >
+        DELETE FROM user WHERE id=#{id}
+    </delete>
 </mapper>

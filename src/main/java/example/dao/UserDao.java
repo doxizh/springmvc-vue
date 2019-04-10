@@ -3,6 +3,7 @@ package example.dao;
 import com.github.pagehelper.PageInfo;
 import example.pojo.User;
 
+import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -13,4 +14,6 @@ public interface UserDao {
     public int register(User user);
     public int updatePassword(User user);
     public Boolean batchAddUser();
+    public PageInfo<User> searchUserByName(String name,int pageSize);
+    public int batchDeleteUser(List list);
 }
