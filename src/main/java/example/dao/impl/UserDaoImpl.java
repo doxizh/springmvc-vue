@@ -139,6 +139,22 @@ public class UserDaoImpl implements UserDao {
     }
 
     @Override
+    public PageInfo<User> searchUser(Map map) {
+        SqlSession sqlSession = null;
+        try {
+            sqlSession = getSqlSessionFactory().openSession();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        assert sqlSession != null;
+        PageHelper.startPage(1, (int) map.get("pageSize"));
+        List<User> list= sqlSession.selectList("test.searchUser",map);
+        sqlSession.close();
+
+        return new PageInfo<>(list);
+    }
+
+    @Override
     public int deleteUser(int id) {
         SqlSession sqlSession = null;
         try {

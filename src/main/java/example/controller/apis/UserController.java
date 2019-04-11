@@ -198,6 +198,17 @@ public class UserController {
         return ModelResult.newSuccess(result);
     }
 
+    @RequestMapping("/searchUser")
+    @ResponseBody
+    public ModelResult searchUser(HttpServletRequest request, HttpServletResponse response,@RequestBody Map map) throws IOException {
+        UserDaoImpl usertest=new UserDaoImpl();
+        PageInfo<User> list=usertest.searchUser(map);
+        Map<String,Object> result = new HashMap<>();
+        result.put("total",list.getTotal());
+        result.put("list",list.getList());
+        return ModelResult.newSuccess(result);
+    }
+
     @RequestMapping("/deleteUser")
     @ResponseBody
     public ModelResult deleteUser(HttpServletRequest request, HttpServletResponse response,@RequestBody Map map) throws IOException {
