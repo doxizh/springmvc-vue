@@ -11,6 +11,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.PrintStream;
 import java.io.PrintWriter;
+import java.util.ArrayList;
+import java.util.List;
 
 public class userFilter implements HandlerInterceptor {
     @Override
@@ -18,12 +20,22 @@ public class userFilter implements HandlerInterceptor {
         Boolean isLogin=new CheckIsLogin(httpServletRequest.getSession()).CheckIsLogin();
         String url=httpServletRequest.getRequestURL().toString();
         System.out.println(url);
-        if (!url.endsWith("login")){
+        List<String> list=new ArrayList<>();
+        list.add("login");
+        list.add("register");
+        Boolean flag=false;
+        for (int i = 0; i <list.size() ; i++) {
+            if(url.endsWith(list.get(i))){
+                flag=true;
+                break;
+            }
+        }
+        if (!flag){
             if(!isLogin){
                 httpServletResponse.setCharacterEncoding("utf-8");
                 httpServletResponse.setContentType("text/html; charset=utf-8");
                 PrintWriter writer = httpServletResponse.getWriter();
-                writer.append(JSON.toJSONString(ModelResult.newError("401","用户名或密码不正确",false)));
+                writer.append(JSON.toJSONString(ModelResult.newError("401","未登录",false)));
                 writer.close();
                 return false;
             }else {

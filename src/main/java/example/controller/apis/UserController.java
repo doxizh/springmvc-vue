@@ -70,20 +70,20 @@ public class UserController {
     }
     @RequestMapping("/login")
     @ResponseBody
-    public ModelResult login(HttpServletRequest request, HttpServletResponse response,@RequestBody User userInfo) throws IOException {
-        String username=userInfo.getName();
-        String password=userInfo.getPassword();
+    public ModelResult login(HttpServletRequest request, HttpServletResponse response,@RequestBody Map<String,Object> map) throws IOException {
+        String username= (String) map.get("name");
+        String password= (String) map.get("password");
         UserDaoImpl usertest=new UserDaoImpl();
         User user=usertest.findUserByName(username);
         if(user!=null){
             if(user.getName().equals(username)&&user.getPassword().equals(password)){
                 HttpSession session=request.getSession();
                 session.setAttribute("username", username);
-                Map<String,Object> map=new HashMap<>();
+                Map<String,Object> map1=new HashMap<>();
                 Map<String,Object> userData=new HashMap<>();
                 userData.put("name",user.getName());
-                map.put("userData",userData);
-                return ModelResult.newSuccess(map);
+                map1.put("userData",userData);
+                return ModelResult.newSuccess(map1);
             }else {
                 return ModelResult.newError("403","用户名或密码不正确",false);
             }
@@ -102,20 +102,33 @@ public class UserController {
 
     @RequestMapping("/register")
     @ResponseBody
-    public ModelResult register(HttpServletRequest request, HttpServletResponse response,@RequestBody User userInfo) throws IOException {
-        String username=userInfo.getName();
-        UserDaoImpl usertest=new UserDaoImpl();
-        int num=usertest.register(userInfo);
-        if(num>=0){
-            HttpSession session=request.getSession();
-            session.setAttribute("username", username);
-            Map<String,Object> map=new HashMap<>();
-            Map<String,Object> userData=new HashMap<>();
-            userData.put("name",username);
-            map.put("userData",userData);
-            return ModelResult.newSuccess(map);
+    public ModelResult register(HttpServletRequest request, HttpServletResponse response,@RequestBody Map<String,Object> map) throws IOException {
+        String username= (String) map.get("name");
+        String password = (String) map.get("password");
+        if(username==null||password==null||"".equals(username)||"".equals(password)){
+            return ModelResult.newError("400","参数不正确",false);
+        }
+        UserDaoImpl userDao=new UserDaoImpl();
+        User user=userDao.findUserByName(username);
+        if(user!=null){
+            return ModelResult.newError("403","用户名已存在",false);
         }else {
-            return ModelResult.newError("403","注册失败",false);
+            user.setName(username);
+            user.setPassword(password);
+            user.setCreateDate();
+            user.setUpdateDate();
+            int num = userDao.register(user);
+            if (num >= 0) {
+                HttpSession session = request.getSession();
+                session.setAttribute("username", username);
+                Map<String, Object> map1 = new HashMap<>();
+                Map<String, Object> userData = new HashMap<>();
+                userData.put("name", username);
+                map1.put("userData", userData);
+                return ModelResult.newSuccess(map1);
+            } else {
+                return ModelResult.newError("403", "注册失败", false);
+            }
         }
     }
 

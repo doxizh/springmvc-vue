@@ -80,6 +80,8 @@ public class UserDaoImpl implements UserDao {
             e.printStackTrace();
         }
         assert sqlSession != null;
+        user.setCreateDate();
+        user.setUpdateDate();
         int num=sqlSession.insert("test.register",user);
         sqlSession.commit();
         sqlSession.close();
@@ -95,6 +97,7 @@ public class UserDaoImpl implements UserDao {
             e.printStackTrace();
         }
         assert sqlSession != null;
+        user.setUpdateDate();
         int num=sqlSession.update("test.updatePassword",user);
         sqlSession.commit();
         sqlSession.close();
@@ -115,6 +118,8 @@ public class UserDaoImpl implements UserDao {
             User user= new User();
             user.setPassword("123456");
             user.setName("测试".concat(String.valueOf(i)));
+            user.setCreateDate();
+            user.setUpdateDate();
             sqlSession.insert("test.register",user);
         }
         sqlSession.commit();
@@ -177,10 +182,12 @@ public class UserDaoImpl implements UserDao {
             e.printStackTrace();
         }
         assert sqlSession != null;
-        Map<String,Object> map=new HashMap<>();
-        map.put("id",id);
-        map.put("name",name);
-        int num= sqlSession.update("test.editUser",map);
+        User user =new User();
+        user.setId(id);
+        user.setName(name);
+        user.setCreateDate();
+        user.setUpdateDate();
+        int num= sqlSession.update("test.editUser",user);
         sqlSession.commit();
         sqlSession.close();
         return num;

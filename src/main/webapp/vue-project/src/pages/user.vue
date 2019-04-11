@@ -46,6 +46,14 @@
           label="用户名">
         </el-table-column>
         <el-table-column
+          property="createDate"
+          label="创建时间">
+        </el-table-column>
+        <el-table-column
+          property="updateDate"
+          label="更新时间">
+        </el-table-column>
+        <el-table-column
           label="操作">
           <template slot-scope="scope">
             <el-button @click="handleClick(scope.row)" type="text" size="small">查看</el-button>
@@ -159,6 +167,7 @@
                   type: 'success',
                   message: '编辑成功!'
                 });
+                this.$refs.editUserDialogForm.resetFields();
                 this.editUserDialog=false;
                 this.pageNum = 1;
                 this.findUserAll();
@@ -245,6 +254,8 @@
                 });
                 this.$refs.addUserDialogForm.resetFields();
                 this.addUserDialog=false;
+                this.pageNum=1;
+                this.findUserAll();
               }else {
                 this.$notify.error({
                   title: '错误',
