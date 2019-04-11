@@ -277,7 +277,7 @@
         this.$refs.controlBarForm.resetFields();
       },
       handleSelectionChange(val){
-        this.selectedItem=val;
+        this.selectedItems=val;
       },
       batchDelete(){
         if(this.selectedItems.length>0){

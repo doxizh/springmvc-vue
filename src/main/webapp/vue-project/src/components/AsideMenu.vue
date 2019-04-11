@@ -2,7 +2,7 @@
   <div class="aside-menu">
     <el-menu
       router
-      :default-active="$route.path"
+      :default-active="activeIndex"
       class="el-menu-vertical-demo"
       @open="handleOpen"
       @close="handleClose"
@@ -26,11 +26,14 @@
     name: "AsideMenu",
     data() {
       return {
-        activeIndex: "/home",
+        activeIndex: this.$route.path,
       }
     },
     created(){
       console.log(this.$route.path);
+      if(this.$route.path==='/'){
+        this.activeIndex='/home';
+      }
     },
     methods: {
       handleOpen(key, keyPath) {
