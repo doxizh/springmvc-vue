@@ -15,7 +15,7 @@
         </el-form-item>
         <p class="go-login-box">已有账号，<router-link class="go-login" :to="{path:'/login',query:{redirect:$route.query.redirect}}">去登录</router-link></p>
         <el-form-item>
-          <el-button type="primary" @click="register">注册</el-button>
+          <el-button type="primary" @click="register" :loading="registerLoading">{{registerLoading?"注册中":"注册"}}</el-button>
         </el-form-item>
       </el-form>
     </el-card>
@@ -26,7 +26,7 @@
 <script>
   import {mapMutations} from 'vuex';
   export default {
-    name: "login",
+    name: "register",
     data() {
       const checkName=(rule, value, callback)=>{
         if (value === '') {
@@ -60,6 +60,7 @@
           password:'',
           repassword:'',
         },
+        registerLoading:false,
         rules: {
           name: [
             { validator: checkName, trigger: 'blur' }
@@ -82,13 +83,15 @@
         'changeLoginStatus'
       ]),
       register(){
-        let postData={
-          name:this.registerForm.name,
-          password:this.registerForm.password
-        };
         this.$refs.registerForm.validate((valid)=>{
           if(valid){
+            let postData={
+              name:this.registerForm.name,
+              password:this.registerForm.password
+            };
+            this.registerLoading=true;
             this.$axios.post(this.$proxy+this.$apis.register,postData).then(data=>{
+              this.registerLoading=false;
               if(data.data.success){
                 this.SAVE_USER_INFO(data.data.result.userData);
                 this.changeLoginStatus(true);

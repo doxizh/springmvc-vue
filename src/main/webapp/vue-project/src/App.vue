@@ -5,22 +5,16 @@
 </template>
 
 <script>
-  import {mapMutations} from 'vuex'
   export default {
     name: 'App',
     created(){
-      window.onbeforeunload = (e) => {
-        this.saveStateToLocal();
-      }
+
     },
     mounted(){
 
     },
     methods:{
-      ...mapMutations([
-        'setStateFromLocal',
-        'saveStateToLocal'
-      ])
+
     }
 
   }

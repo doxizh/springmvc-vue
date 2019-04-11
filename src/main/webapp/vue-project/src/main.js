@@ -51,6 +51,9 @@ axios.interceptors.response.use(
     }
     return Promise.reject(error.response.data)   // 返回接口返回的错误信息
   });
+window.onbeforeunload = (e) => {
+  this.store.commit('saveStateToLocal');
+};
 Vue.config.productionTip = false;
 
 /* eslint-disable no-new */

@@ -59,7 +59,7 @@
           <el-table-column
             label="操作">
             <template slot-scope="scope">
-              <el-button @click="handleClick(scope.row)" type="text" size="small">查看</el-button>
+              <el-button @click="openCheckDialog(scope.row)" type="text" size="small">查看</el-button>
               <el-button @click="openEditDialog(scope.row)" type="text" size="small">编辑</el-button>
               <el-button type="text" size="small" @click="deleteUser(scope.row)">删除</el-button>
             </template>
@@ -101,6 +101,31 @@
         <el-button type="primary" @click="editUser" :loading="editUserDialogLoading">
           {{editUserDialogLoading?'请稍后':'确定'}}
         </el-button>
+      </div>
+    </el-dialog>
+    <el-dialog title="查看用户" :visible.sync="checkUserDialog">
+      <div class="dialog-body">
+        <div class="lists">
+          <div class="item">
+            <div class="label">用户ID：</div>
+            <div class="text">{{selectedItem.id}}</div>
+          </div>
+          <div class="item">
+            <div class="label">用户名：</div>
+            <div class="text">{{selectedItem.name}}</div>
+          </div>
+          <div class="item">
+            <div class="label">创建日期：</div>
+            <div class="text">{{selectedItem.createDate}}</div>
+          </div>
+          <div class="item">
+            <div class="label">修改日期：</div>
+            <div class="text">{{selectedItem.updateDate}}</div>
+          </div>
+        </div>
+      </div>
+      <div slot="footer" class="dialog-footer">
+        <el-button type="primary" @click="checkUserDialog=false">确定</el-button>
       </div>
     </el-dialog>
   </div>
@@ -149,6 +174,7 @@
         },
         selectedItems: [],
         selectedItem: {},
+        checkUserDialog:false,
       }
     },
     created() {
@@ -214,8 +240,10 @@
 
         });
       },
-      handleClick(row) {
-        console.log(row);
+      openCheckDialog(row){
+        this.selectedItem = row;
+        console.log(this.selectedItem);
+        this.checkUserDialog = true;
       },
       handleSizeChange(val) {
         this.pageSize = val;
@@ -393,6 +421,17 @@
         .el-pagination {
           margin-top: 15px;
           text-align: right;
+        }
+      }
+    }
+  }
+  .el-dialog{
+    .lists{
+      .item{
+        display: flex;
+        margin-bottom: 15px;
+        .label{
+          width: 6em;
         }
       }
     }
