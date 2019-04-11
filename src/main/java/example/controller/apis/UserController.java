@@ -109,10 +109,11 @@ public class UserController {
             return ModelResult.newError("400","参数不正确",false);
         }
         UserDaoImpl userDao=new UserDaoImpl();
-        User user=userDao.findUserByName(username);
-        if(user!=null){
+        User findUser=userDao.findUserByName(username);
+        if(findUser!=null){
             return ModelResult.newError("403","用户名已存在",false);
         }else {
+            User user=new User();
             user.setName(username);
             user.setPassword(password);
             user.setCreateDate();
