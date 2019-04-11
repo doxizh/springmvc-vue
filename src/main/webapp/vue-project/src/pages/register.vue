@@ -74,26 +74,13 @@
       }
     },
     created() {
-      // this.login();
+
     },
     methods:{
       ...mapMutations([
         'SAVE_USER_INFO',
         'changeLoginStatus'
       ]),
-      login(){
-        let postData={
-          name:this.registerForm.name,
-          password:this.registerForm.password
-        };
-        this.$axios.post(this.$proxy+this.$apis.login,postData).then(data=>{
-          if(data.data.success){
-            this.SAVE_USER_INFO(data.data.result.userData);
-            this.changeLoginStatus(true);
-            this.$router.push(this.$route.query.redirect||'home');
-          }
-        })
-      },
       register(){
         let postData={
           name:this.registerForm.name,
@@ -106,6 +93,11 @@
                 this.SAVE_USER_INFO(data.data.result.userData);
                 this.changeLoginStatus(true);
                 this.$router.push(this.$route.query.redirect||'home');
+              }else {
+                this.$notify.error({
+                  message:data.data.msg,
+                  title:"错误"
+                })
               }
             })
           }else {

@@ -23,10 +23,6 @@ public class UserController {
     @RequestMapping("/findUserByIdTest")
     @ResponseBody
     public ModelResult findUserByIdTest(HttpServletRequest request) throws IOException {
-        Boolean isLogin=new CheckIsLogin(request.getSession()).CheckIsLogin();
-        if(!isLogin){
-            return ModelResult.newError("401",false);
-        }
         UserDaoImpl usertest=new UserDaoImpl();
         User user=usertest.findUserByIdTest(1);
         Map<String,Object> map=new HashMap<String,Object>();
@@ -38,10 +34,6 @@ public class UserController {
     @RequestMapping("/findUserAll")
     @ResponseBody
     public ModelResult findUserAll(HttpServletRequest request,int pageSize,int pageNum) throws IOException {
-        Boolean isLogin=new CheckIsLogin(request.getSession()).CheckIsLogin();
-        if(!isLogin){
-            return ModelResult.newError("401",false);
-        }
         UserDaoImpl usertest=new UserDaoImpl();
         PageInfo<User> list=usertest.findUserAll(pageNum,pageSize);
         Map<String,Object> map = new HashMap<>();
@@ -78,25 +70,25 @@ public class UserController {
     }
     @RequestMapping("/login")
     @ResponseBody
-    public ModelResult login(HttpServletRequest request, HttpServletResponse response,@RequestBody User userInfo) throws IOException {
-        String username=userInfo.getName();
-        String password=userInfo.getPassword();
+    public ModelResult login(HttpServletRequest request, HttpServletResponse response,@RequestBody Map<String,Object> map) throws IOException {
+        String username= (String) map.get("name");
+        String password= (String) map.get("password");
         UserDaoImpl usertest=new UserDaoImpl();
         User user=usertest.findUserByName(username);
         if(user!=null){
             if(user.getName().equals(username)&&user.getPassword().equals(password)){
                 HttpSession session=request.getSession();
                 session.setAttribute("username", username);
-                Map<String,Object> map=new HashMap<>();
+                Map<String,Object> map1=new HashMap<>();
                 Map<String,Object> userData=new HashMap<>();
                 userData.put("name",user.getName());
-                map.put("userData",userData);
-                return ModelResult.newSuccess(map);
+                map1.put("userData",userData);
+                return ModelResult.newSuccess(map1);
             }else {
-                return ModelResult.newError("401","用户名或密码不正确",false);
+                return ModelResult.newError("403","用户名或密码不正确",false);
             }
         }else {
-            return ModelResult.newError("401","用户名不存在",false);
+            return ModelResult.newError("403","用户名不存在",false);
         }
     }
     @RequestMapping("/logout")
@@ -110,20 +102,32 @@ public class UserController {
 
     @RequestMapping("/register")
     @ResponseBody
-    public ModelResult register(HttpServletRequest request, HttpServletResponse response,@RequestBody User userInfo) throws IOException {
-        String username=userInfo.getName();
-        UserDaoImpl usertest=new UserDaoImpl();
-        int num=usertest.register(userInfo);
-        if(num>=0){
-            HttpSession session=request.getSession();
-            session.setAttribute("username", username);
-            Map<String,Object> map=new HashMap<>();
-            Map<String,Object> userData=new HashMap<>();
-            userData.put("name",username);
-            map.put("userData",userData);
-            return ModelResult.newSuccess(map);
+    public ModelResult register(HttpServletRequest request, HttpServletResponse response,@RequestBody Map<String,Object> map) throws IOException {
+        String username= (String) map.get("name");
+        String password = (String) map.get("password");
+        if(username==null||password==null||"".equals(username)||"".equals(password)){
+            return ModelResult.newError("400","参数不正确",false);
+        }
+        UserDaoImpl userDao=new UserDaoImpl();
+        User findUser=userDao.findUserByName(username);
+        if(findUser!=null){
+            return ModelResult.newError("403","用户名已存在",false);
         }else {
-            return ModelResult.newError("401","用户名不存在",false);
+            User user=new User();
+            user.setName(username);
+            user.setPassword(password);
+            int num = userDao.register(user);
+            if (num >= 0) {
+                HttpSession session = request.getSession();
+                session.setAttribute("username", username);
+                Map<String, Object> map1 = new HashMap<>();
+                Map<String, Object> userData = new HashMap<>();
+                userData.put("name", username);
+                map1.put("userData", userData);
+                return ModelResult.newSuccess(map1);
+            } else {
+                return ModelResult.newError("403", "注册失败", false);
+            }
         }
     }
 
@@ -188,6 +192,17 @@ public class UserController {
         }
         UserDaoImpl usertest=new UserDaoImpl();
         PageInfo<User> list=usertest.searchUserByName(name,pageSize);
+        Map<String,Object> result = new HashMap<>();
+        result.put("total",list.getTotal());
+        result.put("list",list.getList());
+        return ModelResult.newSuccess(result);
+    }
+
+    @RequestMapping("/searchUser")
+    @ResponseBody
+    public ModelResult searchUser(HttpServletRequest request, HttpServletResponse response,@RequestBody Map map) throws IOException {
+        UserDaoImpl usertest=new UserDaoImpl();
+        PageInfo<User> list=usertest.searchUser(map);
         Map<String,Object> result = new HashMap<>();
         result.put("total",list.getTotal());
         result.put("list",list.getList());

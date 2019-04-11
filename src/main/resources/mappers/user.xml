@@ -13,22 +13,36 @@
     <!-- resultType：指定sql输出结果的所映射的java对象类型，select指定resultType表示将单条记录映射成的java对象。 -->
     <!-- 表名要对，但是不区分大小写，resultType要写类名，同样不区分大小写 -->
     <select id="findUserById" parameterType="int"  resultType="user">
-        SELECT * FROM user WHERE id = #{value}
+        SELECT id,name,createDate,updateDate FROM user WHERE id = #{value}
     </select>
     <select id="findUserByName" parameterType="String"  resultType="user">
-        SELECT * FROM user WHERE name = #{value}
+        SELECT name,password FROM user WHERE name = #{value}
     </select>
     <select id="findUserAll" resultType="user">
-        SELECT id,name FROM user
+        SELECT id,name,createDate,updateDate FROM user
     </select>
     <insert id="register" parameterType="user">
-        INSERT INTO user (name,password) VALUES (#{name},#{password});
+        INSERT INTO user (name,password,createDate,updateDate) VALUES (#{name},#{password},now(),now());
     </insert>
     <update id="updatePassword" parameterType="user">
-        UPDATE user SET password=#{password} WHERE name = #{name}
+        UPDATE user SET password=#{password},updateDate=now() WHERE name = #{name}
     </update>
     <select id="searchUserByName" parameterType="String" resultType="user">
         SELECT id,name FROM user WHERE name LIKE "%"#{name}"%"
+    </select>
+    <select id="searchUser" parameterType="Map" resultType="user">
+        SELECT id,name,createDate,updateDate FROM user
+        <where>
+            <if test="name!=null">
+                name LIKE "%"#{name}"%"
+            </if>
+            <if test="startDate!=null">
+                <![CDATA[ AND DATE_FORMAT(createDate , '%Y-%m-%d')>=  DATE_FORMAT(#{startDate}, '%Y-%m-%d')   ]]>
+            </if>
+            <if test="endDate!=null">
+                <![CDATA[ AND DATE_FORMAT(createDate , '%Y-%m-%d')<=  DATE_FORMAT(#{endDate}, '%Y-%m-%d')   ]]>
+            </if>
+        </where>
     </select>
     <delete id="batchDeleteUser" parameterType="List" >
         DELETE FROM user WHERE id in
@@ -39,7 +53,7 @@
     <delete id="deleteUser" parameterType="int" >
         DELETE FROM user WHERE id=#{id}
     </delete>
-    <update id="editUser" parameterType="Map" >
-        UPDATE user SET name=#{name} WHERE id = #{id}
+    <update id="editUser" parameterType="user" >
+        UPDATE user SET name=#{name},updateDate=now() WHERE id = #{id}
     </update>
 </mapper>
