@@ -23,10 +23,6 @@ public class UserController {
     @RequestMapping("/findUserByIdTest")
     @ResponseBody
     public ModelResult findUserByIdTest(HttpServletRequest request) throws IOException {
-        Boolean isLogin=new CheckIsLogin(request.getSession()).CheckIsLogin();
-        if(!isLogin){
-            return ModelResult.newError("401",false);
-        }
         UserDaoImpl usertest=new UserDaoImpl();
         User user=usertest.findUserByIdTest(1);
         Map<String,Object> map=new HashMap<String,Object>();
@@ -38,10 +34,6 @@ public class UserController {
     @RequestMapping("/findUserAll")
     @ResponseBody
     public ModelResult findUserAll(HttpServletRequest request,int pageSize,int pageNum) throws IOException {
-        Boolean isLogin=new CheckIsLogin(request.getSession()).CheckIsLogin();
-        if(!isLogin){
-            return ModelResult.newError("401",false);
-        }
         UserDaoImpl usertest=new UserDaoImpl();
         PageInfo<User> list=usertest.findUserAll(pageNum,pageSize);
         Map<String,Object> map = new HashMap<>();
@@ -93,10 +85,10 @@ public class UserController {
                 map.put("userData",userData);
                 return ModelResult.newSuccess(map);
             }else {
-                return ModelResult.newError("401","用户名或密码不正确",false);
+                return ModelResult.newError("403","用户名或密码不正确",false);
             }
         }else {
-            return ModelResult.newError("401","用户名不存在",false);
+            return ModelResult.newError("403","用户名不存在",false);
         }
     }
     @RequestMapping("/logout")
@@ -123,7 +115,7 @@ public class UserController {
             map.put("userData",userData);
             return ModelResult.newSuccess(map);
         }else {
-            return ModelResult.newError("401","用户名不存在",false);
+            return ModelResult.newError("403","注册失败",false);
         }
     }
 

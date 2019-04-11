@@ -136,7 +136,7 @@
         this.$axios.post(this.$proxy+this.$apis.logout).then(data=>{
           if(data.data.success){
             this.changeLoginStatus(false);
-            this.$router.push('Login');
+            this.$router.push('/login');
           }
         })
       }
