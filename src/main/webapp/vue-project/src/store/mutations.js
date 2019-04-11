@@ -1,26 +1,15 @@
 import types from './types';
 
 const mutations = {
-  addNum: state => {
-    state.num++;
-  },
   [types.SAVE_USER_INFO](state,obj) {
     state.userInfo=obj;
   },
   saveStateToLocal(state){
-    localStorage.setItem('element-project-state',JSON.stringify(state));
-  },
-  setStateFromLocal:(state)=>{
-    let localState=localStorage.getItem('element-project-state');
-    if(localState){
-      localState=JSON.parse(localState);
-      Object.keys(localState).forEach(key=>{
-        state[key]=localState[key];
-      });
-    }
+    localStorage.setItem('springmvc-vue-state',JSON.stringify(state));
   },
   changeLoginStatus:(state,flag)=>{
     state.isLogin=flag;
+    localStorage.setItem('springmvc-vue-state',JSON.stringify(state));
   }
 };
 export default mutations;

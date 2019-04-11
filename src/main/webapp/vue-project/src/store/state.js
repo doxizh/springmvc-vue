@@ -1,4 +1,4 @@
-let elementProjectState=localStorage.getItem('element-project-state');
+let elementProjectState=localStorage.getItem('springmvc-vue-state');
 if(elementProjectState){
   elementProjectState=JSON.parse(elementProjectState);
 }
