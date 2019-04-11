@@ -116,8 +116,6 @@ public class UserController {
             User user=new User();
             user.setName(username);
             user.setPassword(password);
-            user.setCreateDate();
-            user.setUpdateDate();
             int num = userDao.register(user);
             if (num >= 0) {
                 HttpSession session = request.getSession();

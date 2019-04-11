@@ -22,10 +22,10 @@
         SELECT id,name,createDate,updateDate FROM user
     </select>
     <insert id="register" parameterType="user">
-        INSERT INTO user (name,password,createDate,updateDate) VALUES (#{name},#{password},#{createDate},#{updateDate});
+        INSERT INTO user (name,password,createDate,updateDate) VALUES (#{name},#{password},now(),now());
     </insert>
     <update id="updatePassword" parameterType="user">
-        UPDATE user SET password=#{password},updateDate=#{updateDate} WHERE name = #{name}
+        UPDATE user SET password=#{password},updateDate=now() WHERE name = #{name}
     </update>
     <select id="searchUserByName" parameterType="String" resultType="user">
         SELECT id,name FROM user WHERE name LIKE "%"#{name}"%"
@@ -40,6 +40,6 @@
         DELETE FROM user WHERE id=#{id}
     </delete>
     <update id="editUser" parameterType="user" >
-        UPDATE user SET name=#{name},updateDate=#{updateDate} WHERE id = #{id}
+        UPDATE user SET name=#{name},updateDate=now() WHERE id = #{id}
     </update>
 </mapper>
