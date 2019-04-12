@@ -102,6 +102,11 @@
                   title:"错误"
                 })
               }
+            }).catch(()=>{
+              this.$notify.error({
+                message:"网络异常",
+              });
+              this.registerLoading=false;
             })
           }else {
             return false;

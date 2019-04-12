@@ -27,8 +27,8 @@
       <div class="table-box">
         <div class="btn-box">
           <el-button type="success" @click="addUserDialog=true">新增</el-button>
-          <el-button type="primary" @click="batchAddUser">批量新增</el-button>
-          <el-button type="danger" @click="batchDelete">批量删除</el-button>
+          <el-button type="primary" @click="batchAddUser" :loading="batchAddUserLoading">{{batchAddUserLoading?"新增中":"批量新增"}}</el-button>
+          <el-button type="danger" @click="batchDelete" :loading="batchDeleteLoading">{{batchDeleteLoading?"删除中":"批量删除"}}</el-button>
         </div>
         <el-table :data="userData" height="0" @selection-change="handleSelectionChange">
           <el-table-column
@@ -175,6 +175,9 @@
         selectedItems: [],
         selectedItem: {},
         checkUserDialog:false,
+        batchDeleteLoading:false,
+        deleteUserLoading:false,
+        batchAddUserLoading:false,
       }
     },
     created() {
@@ -211,6 +214,11 @@
                   message: data.data.msg
                 });
               }
+            }).catch(()=>{
+              this.$notify.error({
+                message:"网络异常",
+              });
+              this.editUserDialogLoading=false;
             })
           }
         })
@@ -221,10 +229,12 @@
           cancelButtonText: '取消',
           type: 'warning'
         }).then(() => {
+          this.deleteUserLoading=true;
           let postData = {
             id: row.id
           };
           this.$axios.post(this.$proxy + this.$apis.deleteUser, postData).then(data => {
+            this.deleteUserLoading=false;
             if (data.data.success) {
               this.$message({
                 type: 'success',
@@ -235,6 +245,11 @@
             } else {
 
             }
+          }).catch(()=>{
+            this.$notify.error({
+              message:"网络异常",
+            });
+            this.deleteUserLoading=false;
           })
         }).catch(() => {
 
@@ -267,19 +282,26 @@
         })
       },
       batchAddUser() {
+        this.batchAddUserLoading=true;
         this.$axios.post(this.$proxy + this.$apis.batchAddUser).then(data => {
+          this.batchAddUserLoading=false;
           if (data.data.success) {
             this.findUserAll();
           }
+        }).catch(()=>{
+          this.$notify.error({
+            message:"网络异常",
+          });
+          this.batchAddUserLoading=false;
         })
       },
       addUser() {
         this.$refs.addUserDialogForm.validate(valid => {
           if (valid) {
+            this.addUserDialogFormLoading = true;
             let postData = {
               name: this.addUserDialogForm.name
             };
-            this.addUserDialogFormLoading = true;
             this.$axios.post(this.$proxy + this.$apis.addUser, postData).then(data => {
               this.addUserDialogFormLoading = false;
               if (data.data.success) {
@@ -298,6 +320,11 @@
                   message: data.data.msg
                 });
               }
+            }).catch(()=>{
+              this.$notify.error({
+                message:"网络异常",
+              });
+              this.addUserDialogFormLoading=false;
             })
           }
         })
@@ -337,6 +364,7 @@
             cancelButtonText: '取消',
             type: 'warning'
           }).then(() => {
+            this.batchDeleteLoading=true;
             let ids = [];
             for (let i = 0; i < this.selectedItems.length; i++) {
               ids.push(this.selectedItems[i].id);
@@ -345,6 +373,7 @@
               ids: ids
             };
             this.$axios.post(this.$proxy + this.$apis.batchDeleteUser, postData).then(data => {
+              this.batchDeleteLoading=false;
               if (data.data.success) {
                 this.$message({
                   type: 'success',
@@ -355,6 +384,11 @@
               } else {
 
               }
+            }).catch(()=>{
+              this.$notify.error({
+                message:"网络异常",
+              });
+              this.batchDeleteLoading=false;
             })
           }).catch(() => {
 

@@ -29,9 +29,10 @@
     <mvc:interceptors>
         <!-- 使用bean定义一个Interceptor，直接定义在mvc:interceptors根下面的Interceptor将拦截所有的请求 -->
         <mvc:interceptor>
-            <mvc:mapping path="/**"/>
+            <mvc:mapping path="/front/**"/>
             <!-- 需排除拦截的地址 -->
-            <mvc:exclude-mapping path="/#/login" />
+            <mvc:exclude-mapping path="/front/login" />
+            <mvc:exclude-mapping path="/front/register" />
             <!-- 定义在mvc:interceptor下面的表示是对特定的请求才进行拦截的 -->
             <bean class="example.filter.userFilter"/>
         </mvc:interceptor>
