@@ -1,7 +1,7 @@
 import Axios from 'axios';
 import Qs from 'qs';
 const Common = {
-  proxy: process.env.NODE_ENV === 'production' ? '' : '/api',
+  proxy: process.env.NODE_ENV === 'production' ? '/front' : '/api',
   apis: {
     findUserByIdTest: '/findUserByIdTest',
     findUserAll: '/findUserAll',

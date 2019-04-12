@@ -78,6 +78,11 @@
                 this.changeLoginStatus(true);
                 this.$router.push(this.$route.query.redirect||'home');
               }
+            }).catch(()=>{
+              this.$notify.error({
+                message:"网络异常",
+              });
+              this.loginLoading=false;
             })
           }
         });
