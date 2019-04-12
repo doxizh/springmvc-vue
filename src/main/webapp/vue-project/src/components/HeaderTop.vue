@@ -117,7 +117,7 @@
               newPassword:this.updatePasswordForm.newPassword,
             };
             this.loading=true;
-            this.$axios.post(this.$proxy+this.$apis.updatePassword,postData).then(data=>{
+            this.$axios.post(this.$apis.updatePassword,postData).then(data=>{
               this.loading=false;
               if(data.data.success){
                 this.$notify({
@@ -133,7 +133,7 @@
         });
       },
       logout(){
-        this.$axios.post(this.$proxy+this.$apis.logout).then(data=>{
+        this.$axios.post(this.$apis.logout).then(data=>{
           if(data.data.success){
             this.changeLoginStatus(false);
             this.$router.push('/login');

@@ -3,16 +3,21 @@ package example.pojo;
 import com.alibaba.fastjson.annotation.JSONField;
 
 import java.sql.Timestamp;
-import java.util.Date;
 
 public class User {
     private long id;
     private String name;
     private String password;
-    @JSONField(format ="yyyy-MM-dd HH:mm:ss")
+    @JSONField(format = "yyyy-MM-dd HH:mm:ss")
     private Timestamp createDate;
-    @JSONField(format ="yyyy-MM-dd HH:mm:ss")
+    @JSONField(format = "yyyy-MM-dd HH:mm:ss")
     private Timestamp updateDate;
+    private String nickname;
+    private long roleId;
+
+    public User() {
+    }
+
     public long getId() {
         return id;
     }
@@ -51,5 +56,21 @@ public class User {
 
     public void setUpdateDate(Timestamp updateDate) {
         this.updateDate = updateDate;
+    }
+
+    public String getNickname() {
+        return nickname;
+    }
+
+    public void setNickname(String nickname) {
+        this.nickname = nickname;
+    }
+
+    public long getRoleId() {
+        return roleId;
+    }
+
+    public void setRoleId(long roleId) {
+        this.roleId = roleId;
     }
 }

@@ -13,13 +13,13 @@
     <!-- resultType：指定sql输出结果的所映射的java对象类型，select指定resultType表示将单条记录映射成的java对象。 -->
     <!-- 表名要对，但是不区分大小写，resultType要写类名，同样不区分大小写 -->
     <select id="findUserById" parameterType="int"  resultType="user">
-        SELECT id,name,createDate,updateDate FROM user WHERE id = #{value}
+        SELECT id,name,nickname,roleId,createDate,updateDate FROM user WHERE id = #{value}
     </select>
     <select id="findUserByName" parameterType="String"  resultType="user">
         SELECT name,password FROM user WHERE name = #{value}
     </select>
     <select id="findUserAll" resultType="user">
-        SELECT id,name,createDate,updateDate FROM user
+        SELECT id,name,nickname,roleId,createDate,updateDate FROM user
     </select>
     <insert id="register" parameterType="user">
         INSERT INTO user (name,password,createDate,updateDate) VALUES (#{name},#{password},now(),now());

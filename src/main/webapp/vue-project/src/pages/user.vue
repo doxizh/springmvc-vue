@@ -49,6 +49,14 @@
             label="用户名">
           </el-table-column>
           <el-table-column
+            property="nickname"
+            label="昵称">
+          </el-table-column>
+          <el-table-column
+            property="roleId"
+            label="角色Id">
+          </el-table-column>
+          <el-table-column
             property="createDate"
             label="创建时间">
           </el-table-column>
@@ -91,9 +99,12 @@
       </div>
     </el-dialog>
     <el-dialog title="编辑用户" :visible.sync="editUserDialog">
-      <el-form status-icon :model="editUserDialogForm" ref="editUserDialogForm" :rules="editUserDialogRules">
-        <el-form-item label="用户名" label-width="5em" prop="name">
+      <el-form status-icon :model="editUserDialogForm" ref="editUserDialogForm" :rules="editUserDialogRules" label-width="5em">
+        <el-form-item label="用户名" prop="name">
           <el-input v-model="editUserDialogForm.name" autocomplete="off"></el-input>
+        </el-form-item>
+        <el-form-item label="昵称" prop="name">
+          <el-input v-model="editUserDialogForm.nickname" autocomplete="off"></el-input>
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
@@ -153,12 +164,15 @@
         controlBarForm: {
           name: '',
           selectDate: '',
+          nickname: ''
         },
         addUserDialogForm: {
           name: '',
+          nickname: ''
         },
         editUserDialogForm: {
           name: '',
+          nickname: ''
         },
         addUserDialogFormLoading: false,
         editUserDialogLoading: false,
@@ -178,6 +192,7 @@
         batchDeleteLoading:false,
         deleteUserLoading:false,
         batchAddUserLoading:false,
+        roles:[]
       }
     },
     created() {
@@ -197,7 +212,7 @@
               name: this.editUserDialogForm.name
             };
             this.editUserDialogLoading = true;
-            this.$axios.post(this.$proxy + this.$apis.editUser, postData).then(data => {
+            this.$axios.post(this.$apis.editUser, postData).then(data => {
               this.editUserDialogLoading = false;
               if (data.data.success) {
                 this.$message({
@@ -233,7 +248,7 @@
           let postData = {
             id: row.id
           };
-          this.$axios.post(this.$proxy + this.$apis.deleteUser, postData).then(data => {
+          this.$axios.post(this.$apis.deleteUser, postData).then(data => {
             this.deleteUserLoading=false;
             if (data.data.success) {
               this.$message({
@@ -274,7 +289,7 @@
           pageSize: this.pageSize,
           pageNum: this.pageNum,
         };
-        this.$axios.post(this.$proxy + this.$apis.findUserAll, this.$qs.stringify(postData)).then(data => {
+        this.$axios.post(this.$apis.findUserAll, this.$qs.stringify(postData)).then(data => {
           if (data.data.success) {
             this.userData = data.data.result.list || [];
             this.total = data.data.result.total;
@@ -283,7 +298,7 @@
       },
       batchAddUser() {
         this.batchAddUserLoading=true;
-        this.$axios.post(this.$proxy + this.$apis.batchAddUser).then(data => {
+        this.$axios.post(this.$apis.batchAddUser).then(data => {
           this.batchAddUserLoading=false;
           if (data.data.success) {
             this.findUserAll();
@@ -302,7 +317,7 @@
             let postData = {
               name: this.addUserDialogForm.name
             };
-            this.$axios.post(this.$proxy + this.$apis.addUser, postData).then(data => {
+            this.$axios.post(this.$apis.addUser, postData).then(data => {
               this.addUserDialogFormLoading = false;
               if (data.data.success) {
                 this.$notify({
@@ -339,7 +354,7 @@
           postData.startDate=this.controlBarForm.selectDate[0];
           postData.endDate=this.controlBarForm.selectDate[1];
         }
-        this.$axios.post(this.$proxy + this.$apis.searchUser, postData).then(data => {
+        this.$axios.post(this.$apis.searchUser, postData).then(data => {
           if (data.data.success) {
             this.userData = data.data.result.list || [];
             this.total = data.data.result.total;
@@ -372,7 +387,7 @@
             let postData = {
               ids: ids
             };
-            this.$axios.post(this.$proxy + this.$apis.batchDeleteUser, postData).then(data => {
+            this.$axios.post(this.$apis.batchDeleteUser, postData).then(data => {
               this.batchDeleteLoading=false;
               if (data.data.success) {
                 this.$message({

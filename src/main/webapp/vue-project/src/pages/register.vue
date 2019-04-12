@@ -90,7 +90,7 @@
               password:this.registerForm.password
             };
             this.registerLoading=true;
-            this.$axios.post(this.$proxy+this.$apis.register,postData).then(data=>{
+            this.$axios.post(this.$apis.register,postData).then(data=>{
               this.registerLoading=false;
               if(data.data.success){
                 this.SAVE_USER_INFO(data.data.result.userData);

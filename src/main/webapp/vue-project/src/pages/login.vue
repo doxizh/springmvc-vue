@@ -71,7 +71,7 @@
               password:this.loginForm.password
             };
             this.loginLoading=true;
-            this.$axios.post(this.$proxy+this.$apis.login,postData).then(data=>{
+            this.$axios.post(this.$apis.login,postData).then(data=>{
               this.loginLoading=false;
               if(data.data.success){
                 this.SAVE_USER_INFO(data.data.result.userData);
