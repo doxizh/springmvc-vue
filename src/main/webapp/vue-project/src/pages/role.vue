@@ -1,7 +1,7 @@
 <template>
-  <div class="user-page">
+  <div class="role-page">
     <div class="body-title">
-      <h4>用户管理</h4>
+      <h4>角色管理</h4>
     </div>
     <div class="content-body">
       <div class="control-bar">
@@ -17,12 +17,6 @@
               start-placeholder="开始日期"
               end-placeholder="结束日期">
             </el-date-picker>
-          </el-form-item>
-          <el-form-item prop="role" label="角色：">
-            <el-select v-model="controlBarForm.role">
-              <el-option value=""></el-option>
-              <el-option v-for="item in roles" :value="item.id" :label="item.roleName" :key="item.id"></el-option>
-            </el-select>
           </el-form-item>
           <el-form-item class="btn-box">
             <el-button type="primary" @click="searchUser">查询</el-button>
@@ -59,8 +53,8 @@
             label="昵称">
           </el-table-column>
           <el-table-column
-            property="roleNames"
-            label="角色">
+            property="roleId"
+            label="角色Id">
           </el-table-column>
           <el-table-column
             property="createDate"
@@ -147,7 +141,7 @@
 
 <script>
   export default {
-    name: "user",
+    name: "role",
     data() {
       const checkName = (rule, value, callback) => {
         if (value === '') {
@@ -167,8 +161,7 @@
         controlBarForm: {
           name: '',
           selectDate: '',
-          nickname: '',
-          role:''
+          nickname: ''
         },
         addUserDialogForm: {
           name: '',
@@ -199,20 +192,8 @@
     },
     created() {
       this.findUserAll();
-      this.getRoles();
     },
     methods: {
-      getRoles(){
-        let postData = {
-          pageSize: 999,
-          pageNum: 1,
-        };
-        this.$axios.post(this.$apis.getRoles,this.$qs.stringify(postData)).then(data=>{
-          if(data.data.success){
-            this.roles=data.data.result.list||[];
-          }
-        })
-      },
       openEditDialog(row) {
         this.selectedItem = row;
         this.editUserDialogForm.nickname = row.nickname;
@@ -359,8 +340,6 @@
         })
       },
       searchUser() {
-        console.log(this.controlBarForm.role);
-        return
         this.pageNum = 1;
         let postData = {
           name: this.controlBarForm.name,
@@ -455,7 +434,7 @@
     }
   }
 
-  .user-page {
+  .role-page {
     display: flex;
     flex-flow: column;
     width: 100%;

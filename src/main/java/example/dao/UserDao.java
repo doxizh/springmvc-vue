@@ -19,5 +19,5 @@ public interface UserDao {
     public PageInfo<User> searchUser(Map map);
     public int deleteUser(int id);
     public int batchDeleteUser(List list);
-    public int editUser(int id,String name);
+    public int editUser(int id,String nickname);
 }

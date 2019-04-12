@@ -13,7 +13,7 @@ public class User {
     @JSONField(format = "yyyy-MM-dd HH:mm:ss")
     private Timestamp updateDate;
     private String nickname;
-    private long roleId;
+    private String roleNames;
 
     public User() {
     }
@@ -66,11 +66,11 @@ public class User {
         this.nickname = nickname;
     }
 
-    public long getRoleId() {
-        return roleId;
+    public String getRoleNames() {
+        return roleNames;
     }
 
-    public void setRoleId(long roleId) {
-        this.roleId = roleId;
+    public void setRoleNames(String roleNames) {
+        this.roleNames = roleNames;
     }
 }

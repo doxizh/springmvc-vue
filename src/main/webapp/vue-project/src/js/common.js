@@ -18,7 +18,7 @@ const Common = {
     deleteUser: proxy+'/deleteUser',
     editUser: proxy+'/editUser',
     batchDeleteUser: proxy+'/batchDeleteUser',
-    getRoles: proxy+'/getRoles',
+    getRoles: proxy+'/findRoleAll',
   },
   axios: Axios,
   qs: Qs,

@@ -2,20 +2,19 @@ package example.dao.impl;
 
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
-import example.dao.UserDao;
-import example.pojo.User;
+import example.dao.RoleDao;
+import example.pojo.Role;
 import org.apache.ibatis.session.SqlSession;
 
 import java.io.IOException;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import static example.dao.ConnectSql.getSqlSessionFactory;
 
-public class UserDaoImpl implements UserDao {
+public class RoleDaoImpl implements RoleDao {
     @Override
-    public User findUserByIdTest(int id) {
+    public Role findRoleById(int id) {
         // 通过工厂得到SqlSession
         SqlSession sqlSession = null;
         try {
@@ -29,20 +28,19 @@ public class UserDaoImpl implements UserDao {
         // sqlSession.selectOne结果 是与映射文件中所匹配的resultType类型的对象
 
         // selectOne查询出一条记录（这种很麻烦的！！！往后看看）
-        //这里的参数user.findUserById，user为命名空间，要与user.xml中的对应起来，
-        //同理，findUserById也要在user.xml中存在，不然都会报错
+        //这里的参数Role.findRoleById，Role为命名空间，要与Role.xml中的对应起来，
+        //同理，findRoleById也要在Role.xml中存在，不然都会报错
         assert sqlSession != null;
-        User user = sqlSession.selectOne("user.findUserById", id);
-        System.out.println(user.getId());
-        System.out.println(user.getName());
-        System.out.println(user.getPassword());
+        Role Role = sqlSession.selectOne("Role.findRoleById", id);
+        System.out.println(Role.getId());
+        System.out.println(Role.getRoleName());
         // 释放资源
         sqlSession.close();
-        return user;
+        return Role;
     }
 
     @Override
-    public User findUserByName(String name) {
+    public Role findRoleByName(String name) {
         SqlSession sqlSession = null;
         try {
             sqlSession = getSqlSessionFactory().openSession();
@@ -50,13 +48,13 @@ public class UserDaoImpl implements UserDao {
             e.printStackTrace();
         }
         assert sqlSession != null;
-        User user = sqlSession.selectOne("user.findUserByName",name);
+        Role Role = sqlSession.selectOne("Role.findRoleByName",name);
         sqlSession.close();
-        return user;
+        return Role;
     }
 
     @Override
-    public PageInfo<User> findUserAll(int pageNum,int pageSize) {
+    public PageInfo<Role> findRoleAll(int pageNum,int pageSize) {
         SqlSession sqlSession = null;
         try {
             sqlSession = getSqlSessionFactory().openSession();
@@ -65,14 +63,14 @@ public class UserDaoImpl implements UserDao {
         }
         assert sqlSession != null;
         PageHelper.startPage(pageNum,pageSize);
-        List<User> list= sqlSession.selectList("user.findUserAll");
+        List<Role> list= sqlSession.selectList("Role.findRoleAll");
         sqlSession.close();
 
         return new PageInfo<>(list);
     }
 
     @Override
-    public int register(User user) {
+    public int addRole(Role role) {
         SqlSession sqlSession = null;
         try {
             sqlSession = getSqlSessionFactory().openSession();
@@ -80,66 +78,15 @@ public class UserDaoImpl implements UserDao {
             e.printStackTrace();
         }
         assert sqlSession != null;
-        int num=sqlSession.insert("user.register",user);
+        int num=sqlSession.insert("Role.addRole",role);
         sqlSession.commit();
         sqlSession.close();
+
         return num;
     }
 
     @Override
-    public int updatePassword(User user) {
-        SqlSession sqlSession = null;
-        try {
-            sqlSession = getSqlSessionFactory().openSession();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        assert sqlSession != null;
-        int num=sqlSession.update("user.updatePassword",user);
-        sqlSession.commit();
-        sqlSession.close();
-        return num;
-    }
-
-    @Override
-    public Boolean batchAddUser() {
-        SqlSession sqlSession = null;
-        try {
-            sqlSession = getSqlSessionFactory().openSession();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        assert sqlSession != null;
-
-        for(int i=1;i<101;i++){
-            User user= new User();
-            user.setPassword("123456");
-            user.setName("测试".concat(String.valueOf(i)));
-            sqlSession.insert("user.register",user);
-        }
-        sqlSession.commit();
-        sqlSession.close();
-        return true;
-    }
-
-    @Override
-    public PageInfo<User> searchUserByName(String name,int pageSize) {
-        SqlSession sqlSession = null;
-        try {
-            sqlSession = getSqlSessionFactory().openSession();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        assert sqlSession != null;
-        PageHelper.startPage(1,pageSize);
-        List<User> list= sqlSession.selectList("user.searchUserByName",name);
-        sqlSession.close();
-
-        return new PageInfo<>(list);
-    }
-
-    @Override
-    public PageInfo<User> searchUser(Map map) {
+    public PageInfo<Role> searchRole(Map map) {
         SqlSession sqlSession = null;
         try {
             sqlSession = getSqlSessionFactory().openSession();
@@ -148,14 +95,14 @@ public class UserDaoImpl implements UserDao {
         }
         assert sqlSession != null;
         PageHelper.startPage(1, (int) map.get("pageSize"));
-        List<User> list= sqlSession.selectList("user.searchUser",map);
+        List<Role> list= sqlSession.selectList("Role.searchRole",map);
         sqlSession.close();
 
         return new PageInfo<>(list);
     }
 
     @Override
-    public int deleteUser(int id) {
+    public int deleteRole(int id) {
         SqlSession sqlSession = null;
         try {
             sqlSession = getSqlSessionFactory().openSession();
@@ -163,14 +110,14 @@ public class UserDaoImpl implements UserDao {
             e.printStackTrace();
         }
         assert sqlSession != null;
-        int num= sqlSession.delete("user.deleteUser",id);
+        int num= sqlSession.delete("Role.deleteRole",id);
         sqlSession.commit();
         sqlSession.close();
         return num;
     }
 
     @Override
-    public int batchDeleteUser(List list) {
+    public int batchDeleteRole(List list) {
         SqlSession sqlSession = null;
         try {
             sqlSession = getSqlSessionFactory().openSession();
@@ -178,14 +125,14 @@ public class UserDaoImpl implements UserDao {
             e.printStackTrace();
         }
         assert sqlSession != null;
-        int num= sqlSession.delete("user.batchDeleteUser",list);
+        int num= sqlSession.delete("Role.batchDeleteRole",list);
         sqlSession.commit();
         sqlSession.close();
         return num;
     }
 
     @Override
-    public int editUser(int id,String nickname) {
+    public int editRole(int id,String roleName) {
         SqlSession sqlSession = null;
         try {
             sqlSession = getSqlSessionFactory().openSession();
@@ -193,10 +140,10 @@ public class UserDaoImpl implements UserDao {
             e.printStackTrace();
         }
         assert sqlSession != null;
-        User user =new User();
-        user.setId(id);
-        user.setNickname(nickname);
-        int num= sqlSession.update("user.editUser",user);
+        Role Role =new Role();
+        Role.setId(id);
+        Role.setRoleName(roleName);
+        int num= sqlSession.update("Role.editRole",Role);
         sqlSession.commit();
         sqlSession.close();
         return num;

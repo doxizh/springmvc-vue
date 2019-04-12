@@ -231,9 +231,9 @@ public class UserController {
     @ResponseBody
     public ModelResult editUser(HttpServletRequest request, HttpServletResponse response,@RequestBody Map map) throws IOException {
         int id = (int) map.get("id");
-        String name = (String) map.get("name");
+        String nickname = (String) map.get("nickname");
         UserDaoImpl usertest=new UserDaoImpl();
-        int num=usertest.editUser(id,name);
+        int num=usertest.editUser(id,nickname);
         return num>=0?ModelResult.newSuccess(true):ModelResult.newError("删除失败");
     }
 }
