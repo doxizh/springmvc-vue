@@ -30,7 +30,7 @@
         AND r.id = ur.roleId
         GROUP BY u.id
     </select>
-    <insert id="register" parameterType="user">
+    <insert id="register" parameterType="user" useGeneratedKeys="true" keyProperty="id">
         INSERT INTO user (name,password,createDate,updateDate) VALUES (#{name},#{password},now(),now());
     </insert>
     <update id="updatePassword" parameterType="user">

@@ -4,6 +4,7 @@ import com.github.pagehelper.PageInfo;
 import example.controller.CheckIsLogin;
 import example.dao.impl.UserDaoImpl;
 import example.pojo.User;
+import example.pojo.UserRole;
 import example.tools.ModelResult;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -117,14 +118,22 @@ public class UserController {
             user.setName(username);
             user.setPassword(password);
             int num = userDao.register(user);
-            if (num >= 0) {
-                HttpSession session = request.getSession();
-                session.setAttribute("username", username);
-                Map<String, Object> map1 = new HashMap<>();
-                Map<String, Object> userData = new HashMap<>();
-                userData.put("name", username);
-                map1.put("userData", userData);
-                return ModelResult.newSuccess(map1);
+            if (num > 0) {
+                UserRole userRole = new UserRole();
+                userRole.setUserId(user.getId());
+                userRole.setRoleId(0);
+                int num1 = userDao.createRole(userRole);
+                if(num1>0){
+                    HttpSession session = request.getSession();
+                    session.setAttribute("username", username);
+                    Map<String, Object> map1 = new HashMap<>();
+                    Map<String, Object> userData = new HashMap<>();
+                    userData.put("name", username);
+                    map1.put("userData", userData);
+                    return ModelResult.newSuccess(map1);
+                }else {
+                    return ModelResult.newError("403", "创建默认角色失败", false);
+                }
             } else {
                 return ModelResult.newError("403", "注册失败", false);
             }
@@ -165,9 +174,17 @@ public class UserController {
             User user1=new User();
             user1.setPassword("123456");
             user1.setName(name);
-            int num=userDao.register(user1);
-            if(num>=0){
-                return ModelResult.newSuccess(true);
+            int num = userDao.register(user1);
+            if (num > 0) {
+                UserRole userRole = new UserRole();
+                userRole.setUserId(user1.getId());
+                userRole.setRoleId(0);
+                int num1 = userDao.createRole(userRole);
+                if(num1>0){
+                    return ModelResult.newSuccess(true);
+                }else {
+                    return ModelResult.newError("403", "创建默认角色失败", false);
+                }
             }else {
                 return ModelResult.newError("新增失败");
             }
@@ -214,8 +231,21 @@ public class UserController {
     public ModelResult deleteUser(HttpServletRequest request, HttpServletResponse response,@RequestBody Map map) throws IOException {
         int id = (int) map.get("id");
         UserDaoImpl usertest=new UserDaoImpl();
-        int num=usertest.deleteUser(id);
-        return num>=0?ModelResult.newSuccess(true):ModelResult.newError("删除失败");
+        int num=usertest.deleteUserRole(id);
+        int num1=usertest.deleteUser(id);
+        return getModelResult(num, num1);
+    }
+
+    private ModelResult getModelResult(int num, int num1) {
+        if(num>0){
+            if(num1>0){
+                return ModelResult.newSuccess(true);
+            }else {
+                return ModelResult.newError("删除失败");
+            }
+        }else {
+            return ModelResult.newError("删除对应角色失败");
+        }
     }
 
     @RequestMapping("/batchDeleteUser")
@@ -223,8 +253,9 @@ public class UserController {
     public ModelResult batchDeleteUser(HttpServletRequest request, HttpServletResponse response,@RequestBody Map map) throws IOException {
         List list = (List) map.get("ids");
         UserDaoImpl usertest=new UserDaoImpl();
-        int num=usertest.batchDeleteUser(list);
-        return num>=0?ModelResult.newSuccess(true):ModelResult.newError("删除失败");
+        int num=usertest.batchDeleteUserRole(list);
+        int num1=usertest.batchDeleteUser(list);
+        return getModelResult(num, num1);
     }
 
     @RequestMapping("/editUser")
@@ -234,6 +265,6 @@ public class UserController {
         String nickname = (String) map.get("nickname");
         UserDaoImpl usertest=new UserDaoImpl();
         int num=usertest.editUser(id,nickname);
-        return num>=0?ModelResult.newSuccess(true):ModelResult.newError("删除失败");
+        return num>0?ModelResult.newSuccess(true):ModelResult.newError("删除失败");
     }
 }

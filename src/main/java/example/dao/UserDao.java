@@ -2,6 +2,7 @@ package example.dao;
 
 import com.github.pagehelper.PageInfo;
 import example.pojo.User;
+import example.pojo.UserRole;
 
 import java.math.BigInteger;
 import java.util.ArrayList;
@@ -18,6 +19,9 @@ public interface UserDao {
     public PageInfo<User> searchUserByName(String name,int pageSize);
     public PageInfo<User> searchUser(Map map);
     public int deleteUser(int id);
+    public int deleteUserRole(int userId);
     public int batchDeleteUser(List list);
+    public int batchDeleteUserRole(List list);
     public int editUser(int id,String nickname);
+    public int createRole(UserRole userRole);
 }

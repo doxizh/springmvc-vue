@@ -54,7 +54,7 @@ public class RoleController {
             Role Role1=new Role();
             Role1.setRoleName(roleName);
             int num=roleDaoImpl.addRole(Role1);
-            if(num>=0){
+            if(num>0){
                 return ModelResult.newSuccess(true);
             }else {
                 return ModelResult.newError("新增失败");
@@ -79,7 +79,7 @@ public class RoleController {
         int id = (int) map.get("id");
         RoleDaoImpl Roletest=new RoleDaoImpl();
         int num=Roletest.deleteRole(id);
-        return num>=0?ModelResult.newSuccess(true):ModelResult.newError("删除失败");
+        return num>0?ModelResult.newSuccess(true):ModelResult.newError("删除失败");
     }
 
     @RequestMapping("/batchDeleteRole")
@@ -88,7 +88,7 @@ public class RoleController {
         List list = (List) map.get("ids");
         RoleDaoImpl Roletest=new RoleDaoImpl();
         int num=Roletest.batchDeleteRole(list);
-        return num>=0?ModelResult.newSuccess(true):ModelResult.newError("删除失败");
+        return num>0?ModelResult.newSuccess(true):ModelResult.newError("删除失败");
     }
 
     @RequestMapping("/editRole")
@@ -98,6 +98,6 @@ public class RoleController {
         String roleName = (String) map.get("roleName");
         RoleDaoImpl Roletest=new RoleDaoImpl();
         int num=Roletest.editRole(id,roleName);
-        return num>=0?ModelResult.newSuccess(true):ModelResult.newError("删除失败");
+        return num>0?ModelResult.newSuccess(true):ModelResult.newError("删除失败");
     }
 }

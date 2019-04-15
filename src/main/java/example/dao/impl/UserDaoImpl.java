@@ -4,6 +4,7 @@ import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import example.dao.UserDao;
 import example.pojo.User;
+import example.pojo.UserRole;
 import org.apache.ibatis.session.SqlSession;
 
 import java.io.IOException;
@@ -116,6 +117,10 @@ public class UserDaoImpl implements UserDao {
             user.setPassword("123456");
             user.setName("测试".concat(String.valueOf(i)));
             sqlSession.insert("user.register",user);
+            UserRole userRole = new UserRole();
+            userRole.setUserId(user.getId());
+            userRole.setRoleId(0);
+            sqlSession.insert("UserRole.addUserRole",userRole);
         }
         sqlSession.commit();
         sqlSession.close();
@@ -170,6 +175,21 @@ public class UserDaoImpl implements UserDao {
     }
 
     @Override
+    public int deleteUserRole(int userId) {
+        SqlSession sqlSession = null;
+        try {
+            sqlSession = getSqlSessionFactory().openSession();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        assert sqlSession != null;
+        int num= sqlSession.delete("UserRole.deleteUserRole",userId);
+        sqlSession.commit();
+        sqlSession.close();
+        return num;
+    }
+
+    @Override
     public int batchDeleteUser(List list) {
         SqlSession sqlSession = null;
         try {
@@ -179,6 +199,21 @@ public class UserDaoImpl implements UserDao {
         }
         assert sqlSession != null;
         int num= sqlSession.delete("user.batchDeleteUser",list);
+        sqlSession.commit();
+        sqlSession.close();
+        return num;
+    }
+
+    @Override
+    public int batchDeleteUserRole(List list) {
+        SqlSession sqlSession = null;
+        try {
+            sqlSession = getSqlSessionFactory().openSession();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        assert sqlSession != null;
+        int num= sqlSession.delete("UserRole.batchDeleteUserRole",list);
         sqlSession.commit();
         sqlSession.close();
         return num;
@@ -197,6 +232,21 @@ public class UserDaoImpl implements UserDao {
         user.setId(id);
         user.setNickname(nickname);
         int num= sqlSession.update("user.editUser",user);
+        sqlSession.commit();
+        sqlSession.close();
+        return num;
+    }
+
+    @Override
+    public int createRole(UserRole userRole) {
+        SqlSession sqlSession = null;
+        try {
+            sqlSession = getSqlSessionFactory().openSession();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        assert sqlSession != null;
+        int num= sqlSession.insert("UserRole.addUserRole",userRole);
         sqlSession.commit();
         sqlSession.close();
         return num;
