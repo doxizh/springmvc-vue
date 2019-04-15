@@ -154,6 +154,9 @@ public class UserDaoImpl implements UserDao {
         assert sqlSession != null;
         PageHelper.startPage(1, (int) map.get("pageSize"));
         List<User> list= sqlSession.selectList("user.searchUser",map);
+        if(map.get("roleId")!=null&&list.size()>0){
+            list = sqlSession.selectList("user.searchUserByRoleId",list);
+        }
         sqlSession.close();
 
         return new PageInfo<>(list);

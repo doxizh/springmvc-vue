@@ -20,7 +20,7 @@
     </select>
     <select id="findUserAll" resultType="user">
         SELECT
-            u.id,u.name,u.nickname,u.createDate,u.updateDate,GROUP_CONCAT(r.roleName SEPARATOR ',') AS roleNames
+            u.id,u.name,u.nickname,u.createDate,u.updateDate,GROUP_CONCAT(r.id SEPARATOR ',') AS roleIds,GROUP_CONCAT(r.roleName SEPARATOR ',') AS roleNames
         FROM
             USER u
         INNER JOIN user_role ur
@@ -40,10 +40,15 @@
         SELECT id,name FROM user WHERE name LIKE "%"#{name}"%"
     </select>
     <select id="searchUser" parameterType="Map" resultType="user">
-        SELECT id,name,createDate,updateDate FROM user
+        SELECT u.id,u.name,u.nickname,u.createDate,u.updateDate,GROUP_CONCAT(r.id SEPARATOR ',') AS roleIds,GROUP_CONCAT(r.roleName SEPARATOR ',') AS roleNames
+        FROM user u
+        INNER JOIN user_role ur
+        INNER JOIN role r
         <where>
+            u.id = ur.userId
+            AND r.id = ur.roleId
             <if test="name!=null">
-                name LIKE "%"#{name}"%"
+                AND name LIKE "%"#{name}"%"
             </if>
             <if test="startDate!=null">
                 <![CDATA[ AND DATE_FORMAT(createDate , '%Y-%m-%d')>=  DATE_FORMAT(#{startDate}, '%Y-%m-%d')   ]]>
@@ -51,7 +56,26 @@
             <if test="endDate!=null">
                 <![CDATA[ AND DATE_FORMAT(createDate , '%Y-%m-%d')<=  DATE_FORMAT(#{endDate}, '%Y-%m-%d')   ]]>
             </if>
+            <if test="roleId!=null">
+                AND ur.roleId=#{roleId}
+            </if>
         </where>
+        GROUP BY u.id
+    </select>
+    <select id="searchUserByRoleId" parameterType="List" resultType="user">
+        SELECT u.id,u.name,u.nickname,u.createDate,u.updateDate,GROUP_CONCAT(r.id SEPARATOR ',') AS roleIds,GROUP_CONCAT(r.roleName SEPARATOR ',') AS roleNames
+        FROM user u
+        INNER JOIN user_role ur
+        INNER JOIN role r
+        <where>
+            u.id = ur.userId
+            AND r.id = ur.roleId
+            AND u.id IN
+            <foreach collection="list"  item="item" open="(" separator="," close=")"  >
+                #{item.id}
+            </foreach>
+        </where>
+        GROUP BY u.id
     </select>
     <delete id="batchDeleteUser" parameterType="List" >
         DELETE FROM user WHERE id in

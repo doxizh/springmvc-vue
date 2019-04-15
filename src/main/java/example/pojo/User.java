@@ -14,6 +14,7 @@ public class User {
     private Timestamp updateDate;
     private String nickname;
     private String roleNames;
+    private String roleIds;
 
     public User() {
     }
@@ -72,5 +73,13 @@ public class User {
 
     public void setRoleNames(String roleNames) {
         this.roleNames = roleNames;
+    }
+
+    public String getRoleIds() {
+        return roleIds;
+    }
+
+    public void setRoleIds(String roleIds) {
+        this.roleIds = roleIds;
     }
 }

@@ -359,8 +359,6 @@
         })
       },
       searchUser() {
-        console.log(this.controlBarForm.role);
-        return
         this.pageNum = 1;
         let postData = {
           name: this.controlBarForm.name,
@@ -369,6 +367,9 @@
         if(!!this.controlBarForm.selectDate){
           postData.startDate=this.controlBarForm.selectDate[0];
           postData.endDate=this.controlBarForm.selectDate[1];
+        }
+        if(this.controlBarForm.role!==''){
+          postData.roleId=this.controlBarForm.role;
         }
         this.$axios.post(this.$apis.searchUser, postData).then(data => {
           if (data.data.success) {
