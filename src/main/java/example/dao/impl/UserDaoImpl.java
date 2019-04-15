@@ -152,13 +152,17 @@ public class UserDaoImpl implements UserDao {
             e.printStackTrace();
         }
         assert sqlSession != null;
-        PageHelper.startPage(1, (int) map.get("pageSize"));
+        PageHelper.startPage((int) map.get("pageNum"), (int) map.get("pageSize"));
         List<User> list= sqlSession.selectList("user.searchUser",map);
         if(map.get("roleId")!=null&&list.size()>0){
+            int total = (int) new PageInfo<>(list).getTotal();
             list = sqlSession.selectList("user.searchUserByRoleId",list);
+            sqlSession.close();
+            PageInfo<User> list1=new PageInfo<>(list);
+            list1.setTotal(total);
+            return list1;
         }
         sqlSession.close();
-
         return new PageInfo<>(list);
     }
 

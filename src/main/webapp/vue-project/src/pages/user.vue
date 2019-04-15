@@ -79,8 +79,7 @@
             </template>
           </el-table-column>
         </el-table>
-        <el-pagination v-if="total>pageSize"
-                       background
+        <el-pagination background
                        @size-change="handleSizeChange"
                        @current-change="handleCurrentChange"
                        :current-page="pageNum"
@@ -194,7 +193,7 @@
         batchDeleteLoading:false,
         deleteUserLoading:false,
         batchAddUserLoading:false,
-        roles:[]
+        roles:[],
       }
     },
     created() {
@@ -292,11 +291,11 @@
       handleSizeChange(val) {
         this.pageSize = val;
         this.pageNum = 1;
-        this.findUserAll();
+        this.searchUser();
       },
       handleCurrentChange(val) {
         this.pageNum = val;
-        this.findUserAll();
+        this.searchUser();
       },
       findUserAll() {
         let postData = {
@@ -359,9 +358,9 @@
         })
       },
       searchUser() {
-        this.pageNum = 1;
         let postData = {
           name: this.controlBarForm.name,
+          pageNum: this.pageNum,
           pageSize: this.pageSize
         };
         if(!!this.controlBarForm.selectDate){
