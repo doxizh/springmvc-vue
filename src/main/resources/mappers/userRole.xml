@@ -15,6 +15,12 @@
     <insert id="addUserRole" parameterType="UserRole">
         INSERT INTO user_role (userId,roleId) VALUES (#{userId},#{roleId})
     </insert>
+    <insert id="batchAddUserRole" parameterType="List">
+        INSERT INTO user_role (userId,roleId) VALUES
+        <foreach collection="list"  item="item" open="(" separator="," close=")"  >
+            #{item.id},#{item.roleId}
+        </foreach>
+    </insert>
     <select id="findRoleById" parameterType="int"  resultType="UserRole">
         SELECT id,userId,roleId FROM user_role WHERE id = #{value}
     </select>

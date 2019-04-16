@@ -23,5 +23,6 @@ public interface UserDao {
     public int batchDeleteUser(List list);
     public int batchDeleteUserRole(List list);
     public int editUser(int id,String nickname);
-    public int createRole(UserRole userRole);
+    public int createUserRole(UserRole userRole);
+    public int createUserRole(List list);
 }

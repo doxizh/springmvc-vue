@@ -245,7 +245,7 @@ public class UserDaoImpl implements UserDao {
     }
 
     @Override
-    public int createRole(UserRole userRole) {
+    public int createUserRole(UserRole userRole) {
         SqlSession sqlSession = null;
         try {
             sqlSession = getSqlSessionFactory().openSession();
@@ -254,6 +254,21 @@ public class UserDaoImpl implements UserDao {
         }
         assert sqlSession != null;
         int num= sqlSession.insert("UserRole.addUserRole",userRole);
+        sqlSession.commit();
+        sqlSession.close();
+        return num;
+    }
+
+    @Override
+    public int createUserRole(List list) {
+        SqlSession sqlSession = null;
+        try {
+            sqlSession = getSqlSessionFactory().openSession();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        assert sqlSession != null;
+        int num= sqlSession.insert("UserRole.batchAddUserRole",list);
         sqlSession.commit();
         sqlSession.close();
         return num;

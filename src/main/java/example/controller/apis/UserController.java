@@ -122,7 +122,7 @@ public class UserController {
                 UserRole userRole = new UserRole();
                 userRole.setUserId(user.getId());
                 userRole.setRoleId(0);
-                int num1 = userDao.createRole(userRole);
+                int num1 = userDao.createUserRole(userRole);
                 if(num1>0){
                     HttpSession session = request.getSession();
                     session.setAttribute("username", username);
@@ -179,7 +179,7 @@ public class UserController {
                 UserRole userRole = new UserRole();
                 userRole.setUserId(user1.getId());
                 userRole.setRoleId(0);
-                int num1 = userDao.createRole(userRole);
+                int num1 = userDao.createUserRole(userRole);
                 if(num1>0){
                     return ModelResult.newSuccess(true);
                 }else {
@@ -263,8 +263,20 @@ public class UserController {
     public ModelResult editUser(HttpServletRequest request, HttpServletResponse response,@RequestBody Map map) throws IOException {
         int id = (int) map.get("id");
         String nickname = (String) map.get("nickname");
+        List list = (List) map.get("roleIds");
         UserDaoImpl usertest=new UserDaoImpl();
         int num=usertest.editUser(id,nickname);
+        if(list!=null&&list.size()>0){
+            int num1=usertest.deleteUserRole(id);
+            List<Map<String,Object>> list1 = new ArrayList<>();
+            for (int i = 0; i < list.size(); i++) {
+                Map<String,Object> map1=new HashMap<>();
+                map1.put("id",id);
+                map1.put("roleId",list.get(i));
+                list1.add(map1);
+            }
+            int num2=usertest.createUserRole(list1);
+        }
         return num>0?ModelResult.newSuccess(true):ModelResult.newError("删除失败");
     }
 }

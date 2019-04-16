@@ -108,6 +108,11 @@
         <el-form-item label="昵称" prop="nickname">
           <el-input v-model="editUserDialogForm.nickname" autocomplete="off"></el-input>
         </el-form-item>
+        <el-form-item label="角色" prop="roleIds">
+          <el-checkbox-group v-model="editUserDialogForm.roleIds">
+            <el-checkbox v-for="item in roles" :key="item.id.toString()" :value="item.id.toString()" :label="item.id.toString()" name="roleIds">{{item.roleName}}</el-checkbox>
+          </el-checkbox-group>
+        </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button @click="editUserDialog=false">取 消</el-button>
@@ -126,6 +131,10 @@
           <div class="item">
             <div class="label">用户名：</div>
             <div class="text">{{selectedItem.name}}</div>
+          </div>
+          <div class="item">
+            <div class="label">角色：</div>
+            <div class="text">{{selectedItem.roleNames}}</div>
           </div>
           <div class="item">
             <div class="label">创建日期：</div>
@@ -174,8 +183,8 @@
           nickname: ''
         },
         editUserDialogForm: {
-          name: '',
-          nickname: ''
+          nickname: '',
+          roleIds:[],
         },
         addUserDialogFormLoading: false,
         editUserDialogLoading: false,
@@ -185,7 +194,9 @@
           ]
         },
         editUserDialogRules: {
-
+          roleIds:[
+            { type: 'array', required: true, message: '请至少选择一个角色', trigger: 'change' }
+          ]
         },
         selectedItems: [],
         selectedItem: {},
@@ -213,8 +224,15 @@
         })
       },
       openEditDialog(row) {
+        this.editUserDialogForm.roleIds=[];
         this.selectedItem = row;
         this.editUserDialogForm.nickname = row.nickname;
+        let roleIds=row.roleIds.split(',');
+        this.roles.map(item=>{
+          if(roleIds.indexOf(item.id.toString())>-1){
+            this.editUserDialogForm.roleIds.push(item.id.toString());
+          }
+        });
         this.editUserDialog = true;
       },
       editUser() {
@@ -222,7 +240,8 @@
           if (valid) {
             let postData = {
               id: this.selectedItem.id,
-              nickname: this.editUserDialogForm.nickname
+              nickname: this.editUserDialogForm.nickname,
+              roleIds: this.editUserDialogForm.roleIds
             };
             this.editUserDialogLoading = true;
             this.$axios.post(this.$apis.editUser, postData).then(data => {
@@ -496,7 +515,7 @@
         display: flex;
         margin-bottom: 15px;
         .label{
-          width: 6em;
+          flex: 0 0 6em;
         }
       }
     }
