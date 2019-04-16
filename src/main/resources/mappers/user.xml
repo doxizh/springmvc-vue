@@ -20,15 +20,23 @@
     </select>
     <select id="findUserAll" resultType="user">
         SELECT
-            u.id,u.name,u.nickname,u.createDate,u.updateDate,GROUP_CONCAT(r.id SEPARATOR ',') AS roleIds,GROUP_CONCAT(r.roleName SEPARATOR ',') AS roleNames
+            u.id,
+            u. NAME,
+            u.nickname,
+            u.createDate,
+            u.updateDate,
+            GROUP_CONCAT(r.id SEPARATOR ',') AS roleIds,
+            GROUP_CONCAT(r.roleName SEPARATOR ',') AS roleNames
         FROM
             USER u
-        INNER JOIN user_role ur
-        INNER JOIN role r
-        WHERE
+        LEFT JOIN user_role ur
+        ON
             u.id = ur.userId
-        AND r.id = ur.roleId
-        GROUP BY u.id
+        LEFT JOIN role r
+        ON
+            r.id = ur.roleId
+        GROUP BY
+            u.id
     </select>
     <insert id="register" parameterType="user" useGeneratedKeys="true" keyProperty="id">
         INSERT INTO user (name,password,createDate,updateDate) VALUES (#{name},#{password},now(),now());
@@ -42,11 +50,13 @@
     <select id="searchUser" parameterType="Map" resultType="user">
         SELECT u.id,u.name,u.nickname,u.createDate,u.updateDate,GROUP_CONCAT(r.id SEPARATOR ',') AS roleIds,GROUP_CONCAT(r.roleName SEPARATOR ',') AS roleNames
         FROM user u
-        INNER JOIN user_role ur
-        INNER JOIN role r
+        LEFT JOIN user_role ur
+        ON
+        u.id = ur.userId
+        LEFT JOIN role r
+        ON
+        r.id = ur.roleId
         <where>
-            u.id = ur.userId
-            AND r.id = ur.roleId
             <if test="name!=null">
                 AND name LIKE "%"#{name}"%"
             </if>

@@ -17,8 +17,8 @@
     </insert>
     <insert id="batchAddUserRole" parameterType="List">
         INSERT INTO user_role (userId,roleId) VALUES
-        <foreach collection="list"  item="item" open="(" separator="," close=")"  >
-            #{item.id},#{item.roleId}
+        <foreach collection="list"  item="item" separator=",">
+            (#{item.userId},#{item.roleId})
         </foreach>
     </insert>
     <select id="findRoleById" parameterType="int"  resultType="UserRole">
@@ -32,6 +32,9 @@
     </delete>
     <delete id="deleteUserRole" parameterType="int" >
         DELETE FROM user_role WHERE userId=#{userId}
+    </delete>
+    <delete id="deleteRoleUser" parameterType="int" >
+        DELETE FROM user_role WHERE roleId=#{roleId}
     </delete>
     <!--<update id="editRole" parameterType="role" >
         UPDATE user_role SET roleName=#{roleName} WHERE id = #{id}

@@ -1,36 +1,26 @@
 <template>
-  <div class="role-page">
+  <div class="role-page page">
     <div class="body-title">
       <h4>角色管理</h4>
     </div>
     <div class="content-body">
       <div class="control-bar">
         <el-form :inline="true" :model="controlBarForm" ref="controlBarForm">
-          <el-form-item prop="name" label="用户名：">
-            <el-input v-model="controlBarForm.name" placeholder="请输入用户名"></el-input>
-          </el-form-item>
-          <el-form-item prop="selectDate" label="选择日期：">
-            <el-date-picker
-              v-model="controlBarForm.selectDate"
-              type="daterange"
-              range-separator="至"
-              start-placeholder="开始日期"
-              end-placeholder="结束日期">
-            </el-date-picker>
+          <el-form-item prop="roleName" label="角色名：">
+            <el-input v-model="controlBarForm.roleName" placeholder="请输入角色名"></el-input>
           </el-form-item>
           <el-form-item class="btn-box">
-            <el-button type="primary" @click="searchUser">查询</el-button>
+            <el-button type="primary" @click="searchRole">查询</el-button>
             <el-button type="warning" @click="resetControlBarForm">重置</el-button>
           </el-form-item>
         </el-form>
       </div>
       <div class="table-box">
         <div class="btn-box">
-          <el-button type="success" @click="addUserDialog=true">新增</el-button>
-          <el-button type="primary" @click="batchAddUser" :loading="batchAddUserLoading">{{batchAddUserLoading?"新增中":"批量新增"}}</el-button>
+          <el-button type="success" @click="addRoleDialog=true">新增</el-button>
           <el-button type="danger" @click="batchDelete" :loading="batchDeleteLoading">{{batchDeleteLoading?"删除中":"批量删除"}}</el-button>
         </div>
-        <el-table :data="userData" height="0" @selection-change="handleSelectionChange">
+        <el-table :data="roleData" height="0" @selection-change="handleSelectionChange">
           <el-table-column
             type="selection"
             width="55">
@@ -42,39 +32,22 @@
           </el-table-column>
           <el-table-column
             property="id"
-            label="用户ID">
+            label="角色ID">
           </el-table-column>
           <el-table-column
-            property="name"
-            label="用户名">
-          </el-table-column>
-          <el-table-column
-            property="nickname"
-            label="昵称">
-          </el-table-column>
-          <el-table-column
-            property="roleId"
-            label="角色Id">
-          </el-table-column>
-          <el-table-column
-            property="createDate"
-            label="创建时间">
-          </el-table-column>
-          <el-table-column
-            property="updateDate"
-            label="更新时间">
+            property="roleName"
+            label="角色名">
           </el-table-column>
           <el-table-column
             label="操作">
             <template slot-scope="scope">
               <el-button @click="openCheckDialog(scope.row)" type="text" size="small">查看</el-button>
               <el-button @click="openEditDialog(scope.row)" type="text" size="small">编辑</el-button>
-              <el-button type="text" size="small" @click="deleteUser(scope.row)">删除</el-button>
+              <el-button type="text" size="small" @click="deleteRole(scope.row)">删除</el-button>
             </template>
           </el-table-column>
         </el-table>
-        <el-pagination v-if="total>pageSize"
-                       background
+        <el-pagination background
                        @size-change="handleSizeChange"
                        @current-change="handleCurrentChange"
                        :current-page="pageNum"
@@ -85,55 +58,47 @@
         </el-pagination>
       </div>
     </div>
-    <el-dialog title="新增用户" :visible.sync="addUserDialog">
-      <el-form status-icon :model="addUserDialogForm" ref="addUserDialogForm" :rules="addUserDialogRules">
-        <el-form-item label="用户名" label-width="5em" prop="name">
-          <el-input v-model="addUserDialogForm.name" autocomplete="off"></el-input>
+    <el-dialog title="新增角色" :visible.sync="addRoleDialog">
+      <el-form status-icon :model="addRoleDialogForm" ref="addRoleDialogForm" :rules="addRoleDialogRules">
+        <el-form-item label="角色名" label-width="5em" prop="name">
+          <el-input v-model="addRoleDialogForm.name" autocomplete="off"></el-input>
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
-        <el-button @click="addUserDialog=false">取 消</el-button>
-        <el-button type="primary" @click="addUser" :loading="addUserDialogFormLoading">
-          {{addUserDialogFormLoading?'请稍后':'确 定'}}
+        <el-button @click="addRoleDialog=false">取 消</el-button>
+        <el-button type="primary" @click="addRole" :loading="addRoleDialogFormLoading">
+          {{addRoleDialogFormLoading?'请稍后':'确 定'}}
         </el-button>
       </div>
     </el-dialog>
-    <el-dialog title="编辑用户" :visible.sync="editUserDialog">
-      <el-form status-icon :model="editUserDialogForm" ref="editUserDialogForm" :rules="editUserDialogRules" label-width="5em">
-        <el-form-item label="昵称" prop="nickname">
-          <el-input v-model="editUserDialogForm.nickname" autocomplete="off"></el-input>
+    <el-dialog title="编辑角色" :visible.sync="editRoleDialog">
+      <el-form status-icon :model="editRoleDialogForm" ref="editRoleDialogForm" :rules="editRoleDialogRules" label-width="5em">
+        <el-form-item label="角色名" prop="roleName">
+          <el-input v-model="editRoleDialogForm.roleName" autocomplete="off"></el-input>
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
-        <el-button @click="editUserDialog=false">取 消</el-button>
-        <el-button type="primary" @click="editUser" :loading="editUserDialogLoading">
-          {{editUserDialogLoading?'请稍后':'确定'}}
+        <el-button @click="editRoleDialog=false">取 消</el-button>
+        <el-button type="primary" @click="editRole" :loading="editRoleDialogLoading">
+          {{editRoleDialogLoading?'请稍后':'确定'}}
         </el-button>
       </div>
     </el-dialog>
-    <el-dialog title="查看用户" :visible.sync="checkUserDialog">
+    <el-dialog title="查看角色" :visible.sync="checkRoleDialog">
       <div class="dialog-body">
         <div class="lists">
           <div class="item">
-            <div class="label">用户ID：</div>
+            <div class="label">角色ID：</div>
             <div class="text">{{selectedItem.id}}</div>
           </div>
           <div class="item">
-            <div class="label">用户名：</div>
-            <div class="text">{{selectedItem.name}}</div>
-          </div>
-          <div class="item">
-            <div class="label">创建日期：</div>
-            <div class="text">{{selectedItem.createDate}}</div>
-          </div>
-          <div class="item">
-            <div class="label">修改日期：</div>
-            <div class="text">{{selectedItem.updateDate}}</div>
+            <div class="label">角色名：</div>
+            <div class="text">{{selectedItem.roleName}}</div>
           </div>
         </div>
       </div>
       <div slot="footer" class="dialog-footer">
-        <el-button type="primary" @click="checkUserDialog=false">确定</el-button>
+        <el-button type="primary" @click="checkRoleDialog=false">确定</el-button>
       </div>
     </el-dialog>
   </div>
@@ -145,79 +110,77 @@
     data() {
       const checkName = (rule, value, callback) => {
         if (value === '') {
-          callback(new Error("请输入用户名"));
+          callback(new Error("请输入角色名"));
         } else {
           callback();
         }
       };
       return {
-        userData: [],
+        roleData: [],
         pageSize: 15,
         pageSizes: [15, 30, 45, 60],
         pageNum: 1,
         total: 0,
-        addUserDialog: false,
-        editUserDialog: false,
+        addRoleDialog: false,
+        editRoleDialog: false,
         controlBarForm: {
-          name: '',
-          selectDate: '',
-          nickname: ''
+          roleName: ''
         },
-        addUserDialogForm: {
-          name: '',
-          nickname: ''
+        addRoleDialogForm: {
+          roleName: ''
         },
-        editUserDialogForm: {
-          name: '',
-          nickname: ''
+        editRoleDialogForm: {
+          roleName: ''
         },
-        addUserDialogFormLoading: false,
-        editUserDialogLoading: false,
-        addUserDialogRules: {
-          name: [
+        addRoleDialogFormLoading: false,
+        editRoleDialogLoading: false,
+        addRoleDialogRules: {
+          roleName: [
             {validator: checkName, trigger: 'blur'}
           ]
         },
-        editUserDialogRules: {
-
+        editRoleDialogRules: {
+          roleName: [
+            {validator: checkName, trigger: 'blur'}
+          ]
         },
         selectedItems: [],
         selectedItem: {},
-        checkUserDialog:false,
+        checkRoleDialog:false,
         batchDeleteLoading:false,
-        deleteUserLoading:false,
-        batchAddUserLoading:false,
+        deleteRoleLoading:false,
+        batchAddRoleLoading:false,
         roles:[]
       }
     },
     created() {
-      this.findUserAll();
+      this.searchRole();
     },
     methods: {
       openEditDialog(row) {
         this.selectedItem = row;
-        this.editUserDialogForm.nickname = row.nickname;
-        this.editUserDialog = true;
+        this.editRoleDialogForm.nickname = row.nickname;
+        this.editRoleDialog = true;
       },
-      editUser() {
-        this.$refs.editUserDialogForm.validate(valid => {
+      editRole() {
+        this.$refs.editRoleDialogForm.validate(valid => {
           if (valid) {
             let postData = {
               id: this.selectedItem.id,
-              nickname: this.editUserDialogForm.nickname
+              nickname: this.editRoleDialogForm.nickname
             };
-            this.editUserDialogLoading = true;
-            this.$axios.post(this.$apis.editUser, postData).then(data => {
-              this.editUserDialogLoading = false;
+            this.editRoleDialogLoading = true;
+            this.$axios.post(this.$apis.editRole, postData).then(data => {
+              this.editRoleDialogLoading = false;
               if (data.data.success) {
                 this.$message({
                   type: 'success',
                   message: '编辑成功!'
                 });
-                this.$refs.editUserDialogForm.resetFields();
-                this.editUserDialog = false;
+                this.$refs.editRoleDialogForm.resetFields();
+                this.editRoleDialog = false;
                 this.pageNum = 1;
-                this.findUserAll();
+                this.findRoleAll();
               } else {
                 this.$message({
                   type: 'error',
@@ -228,30 +191,30 @@
               this.$notify.error({
                 message:"网络异常",
               });
-              this.editUserDialogLoading=false;
+              this.editRoleDialogLoading=false;
             })
           }
         })
       },
-      deleteUser(row) {
-        this.$confirm('确认删除该用户吗?', '提示', {
+      deleteRole(row) {
+        this.$confirm('确认删除该角色吗?', '提示', {
           confirmButtonText: '确定',
           cancelButtonText: '取消',
           type: 'warning'
         }).then(() => {
-          this.deleteUserLoading=true;
+          this.deleteRoleLoading=true;
           let postData = {
             id: row.id
           };
-          this.$axios.post(this.$apis.deleteUser, postData).then(data => {
-            this.deleteUserLoading=false;
+          this.$axios.post(this.$apis.deleteRole, postData).then(data => {
+            this.deleteRoleLoading=false;
             if (data.data.success) {
               this.$message({
                 type: 'success',
                 message: '删除成功!'
               });
               this.pageNum = 1;
-              this.findUserAll();
+              this.findRoleAll();
             } else {
 
             }
@@ -259,7 +222,7 @@
             this.$notify.error({
               message:"网络异常",
             });
-            this.deleteUserLoading=false;
+            this.deleteRoleLoading=false;
           })
         }).catch(() => {
 
@@ -268,62 +231,36 @@
       openCheckDialog(row){
         this.selectedItem = row;
         console.log(this.selectedItem);
-        this.checkUserDialog = true;
+        this.checkRoleDialog = true;
       },
       handleSizeChange(val) {
         this.pageSize = val;
         this.pageNum = 1;
-        this.findUserAll();
+        this.findRoleAll();
       },
       handleCurrentChange(val) {
         this.pageNum = val;
-        this.findUserAll();
+        this.findRoleAll();
       },
-      findUserAll() {
-        let postData = {
-          pageSize: this.pageSize,
-          pageNum: this.pageNum,
-        };
-        this.$axios.post(this.$apis.findUserAll, this.$qs.stringify(postData)).then(data => {
-          if (data.data.success) {
-            this.userData = data.data.result.list || [];
-            this.total = data.data.result.total;
-          }
-        })
-      },
-      batchAddUser() {
-        this.batchAddUserLoading=true;
-        this.$axios.post(this.$apis.batchAddUser).then(data => {
-          this.batchAddUserLoading=false;
-          if (data.data.success) {
-            this.findUserAll();
-          }
-        }).catch(()=>{
-          this.$notify.error({
-            message:"网络异常",
-          });
-          this.batchAddUserLoading=false;
-        })
-      },
-      addUser() {
-        this.$refs.addUserDialogForm.validate(valid => {
+      addRole() {
+        this.$refs.addRoleDialogForm.validate(valid => {
           if (valid) {
-            this.addUserDialogFormLoading = true;
+            this.addRoleDialogFormLoading = true;
             let postData = {
-              name: this.addUserDialogForm.name
+              name: this.addRoleDialogForm.name
             };
-            this.$axios.post(this.$apis.addUser, postData).then(data => {
-              this.addUserDialogFormLoading = false;
+            this.$axios.post(this.$apis.addRole, postData).then(data => {
+              this.addRoleDialogFormLoading = false;
               if (data.data.success) {
                 this.$notify({
                   title: '提示',
-                  message: '新增用户成功',
+                  message: '新增角色成功',
                   type: 'success'
                 });
-                this.$refs.addUserDialogForm.resetFields();
-                this.addUserDialog = false;
+                this.$refs.addRoleDialogForm.resetFields();
+                this.addRoleDialog = false;
                 this.pageNum = 1;
-                this.findUserAll();
+                this.findRoleAll();
               } else {
                 this.$notify.error({
                   title: '错误',
@@ -334,24 +271,22 @@
               this.$notify.error({
                 message:"网络异常",
               });
-              this.addUserDialogFormLoading=false;
+              this.addRoleDialogFormLoading=false;
             })
           }
         })
       },
-      searchUser() {
-        this.pageNum = 1;
+      searchRole() {
         let postData = {
-          name: this.controlBarForm.name,
-          pageSize: this.pageSize
+          pageSize: this.pageSize,
+          pageNum: this.pageNum
         };
-        if(!!this.controlBarForm.selectDate){
-          postData.startDate=this.controlBarForm.selectDate[0];
-          postData.endDate=this.controlBarForm.selectDate[1];
+        if(!!this.controlBarForm.roleName){
+          postData.roleName=this.controlBarForm.roleName;
         }
-        this.$axios.post(this.$apis.searchUser, postData).then(data => {
+        this.$axios.post(this.$apis.getRoles, postData).then(data => {
           if (data.data.success) {
-            this.userData = data.data.result.list || [];
+            this.roleData = data.data.result.list || [];
             this.total = data.data.result.total;
           } else {
             this.$notify.error({
@@ -369,7 +304,7 @@
       },
       batchDelete() {
         if (this.selectedItems.length > 0) {
-          this.$confirm('确认删除所选用户吗?', '提示', {
+          this.$confirm('确认删除所选角色吗?', '提示', {
             confirmButtonText: '确定',
             cancelButtonText: '取消',
             type: 'warning'
@@ -382,7 +317,7 @@
             let postData = {
               ids: ids
             };
-            this.$axios.post(this.$apis.batchDeleteUser, postData).then(data => {
+            this.$axios.post(this.$apis.batchDeleteRole, postData).then(data => {
               this.batchDeleteLoading=false;
               if (data.data.success) {
                 this.$message({
@@ -390,7 +325,7 @@
                   message: '删除成功!'
                 });
                 this.pageNum = 1;
-                this.findUserAll();
+                this.findRoleAll();
               } else {
 
               }
@@ -406,7 +341,7 @@
         } else {
           this.$notify.error({
             title: '错误',
-            message: "请选择要删除的用户"
+            message: "请选择要删除的角色"
           })
         }
       }
@@ -415,69 +350,5 @@
 </script>
 
 <style type="text/scss" lang="scss" scoped>
-  .body-title {
-    background: #fff;
-    padding: 10px 15px;
-    h4 {
-      margin: 0;
-      padding-left: 8px;
-      position: relative;
-      &:before {
-        content: '';
-        position: absolute;
-        left: 0;
-        top: 3px;
-        width: 2px;
-        height: 1em;
-        background-color: $--color-primary;
-      }
-    }
-  }
 
-  .role-page {
-    display: flex;
-    flex-flow: column;
-    width: 100%;
-    .content-body {
-      flex: 1;
-      display: flex;
-      flex-flow: column;
-      .control-bar, .table-box {
-        background: #fff;
-        margin-top: 15px;
-      }
-      .control-bar {
-        padding-left: 15px;
-        .el-form-item {
-          margin-bottom: 0;
-          padding: 15px 0;
-        }
-      }
-      .table-box {
-        flex: 1;
-        display: flex;
-        flex-flow: column;
-        padding: 15px;
-        .el-table {
-          flex: 1;
-          margin-top: 15px;
-        }
-        .el-pagination {
-          margin-top: 15px;
-          text-align: right;
-        }
-      }
-    }
-  }
-  .el-dialog{
-    .lists{
-      .item{
-        display: flex;
-        margin-bottom: 15px;
-        .label{
-          width: 6em;
-        }
-      }
-    }
-  }
 </style>

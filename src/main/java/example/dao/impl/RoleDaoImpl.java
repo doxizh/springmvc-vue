@@ -54,7 +54,9 @@ public class RoleDaoImpl implements RoleDao {
     }
 
     @Override
-    public PageInfo<Role> findRoleAll(int pageNum,int pageSize) {
+    public PageInfo<Role> findRoleAll(Map map) {
+        int pageNum= (int) map.get("pageNum");
+        int pageSize= (int) map.get("pageSize");
         SqlSession sqlSession = null;
         try {
             sqlSession = getSqlSessionFactory().openSession();
@@ -63,7 +65,7 @@ public class RoleDaoImpl implements RoleDao {
         }
         assert sqlSession != null;
         PageHelper.startPage(pageNum,pageSize);
-        List<Role> list= sqlSession.selectList("Role.findRoleAll");
+        List<Role> list= sqlSession.selectList("Role.findRoleAll",map);
         sqlSession.close();
 
         return new PageInfo<>(list);
@@ -111,6 +113,21 @@ public class RoleDaoImpl implements RoleDao {
         }
         assert sqlSession != null;
         int num= sqlSession.delete("Role.deleteRole",id);
+        sqlSession.commit();
+        sqlSession.close();
+        return num;
+    }
+
+    @Override
+    public int deleteUserRole(int id) {
+        SqlSession sqlSession = null;
+        try {
+            sqlSession = getSqlSessionFactory().openSession();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        assert sqlSession != null;
+        int num= sqlSession.delete("UserRole.deleteRoleUser",id);
         sqlSession.commit();
         sqlSession.close();
         return num;

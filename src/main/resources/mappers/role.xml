@@ -18,8 +18,13 @@
     <select id="findRoleByName" parameterType="String"  resultType="role">
         SELECT id,roleName FROM role WHERE name = #{value}
     </select>
-    <select id="findRoleAll" resultType="role">
+    <select id="findRoleAll" parameterType="Map" resultType="role">
         SELECT id,roleName FROM role
+        <where>
+            <if test="roleName!=null">
+                roleName LIKE "%"#{roleName}"%"
+            </if>
+        </where>
     </select>
     <select id="searchRole" parameterType="Map" resultType="role">
         SELECT id,roleName FROM role

@@ -1,7 +1,6 @@
 package example.controller.apis;
 
 import com.github.pagehelper.PageInfo;
-import example.controller.CheckIsLogin;
 import example.dao.impl.UserDaoImpl;
 import example.pojo.User;
 import example.pojo.UserRole;
@@ -11,7 +10,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
@@ -271,7 +269,7 @@ public class UserController {
             List<Map<String,Object>> list1 = new ArrayList<>();
             for (int i = 0; i < list.size(); i++) {
                 Map<String,Object> map1=new HashMap<>();
-                map1.put("id",id);
+                map1.put("userId",id);
                 map1.put("roleId",list.get(i));
                 list1.add(map1);
             }

@@ -1,5 +1,5 @@
 <template>
-  <div class="user-page">
+  <div class="user-page page">
     <div class="body-title">
       <h4>用户管理</h4>
     </div>
@@ -217,7 +217,7 @@
           pageSize: 999,
           pageNum: 1,
         };
-        this.$axios.post(this.$apis.getRoles,this.$qs.stringify(postData)).then(data=>{
+        this.$axios.post(this.$apis.getRoles,postData).then(data=>{
           if(data.data.success){
             this.roles=data.data.result.list||[];
           }
@@ -227,7 +227,7 @@
         this.editUserDialogForm.roleIds=[];
         this.selectedItem = row;
         this.editUserDialogForm.nickname = row.nickname;
-        let roleIds=row.roleIds.split(',');
+        let roleIds=!!row.roleIds?row.roleIds.split(','):[];
         this.roles.map(item=>{
           if(roleIds.indexOf(item.id.toString())>-1){
             this.editUserDialogForm.roleIds.push(item.id.toString());
@@ -378,15 +378,17 @@
       },
       searchUser() {
         let postData = {
-          name: this.controlBarForm.name,
           pageNum: this.pageNum,
           pageSize: this.pageSize
         };
+        if(!!this.controlBarForm.name){
+          postData.name=this.controlBarForm.name;
+        }
         if(!!this.controlBarForm.selectDate){
           postData.startDate=this.controlBarForm.selectDate[0];
           postData.endDate=this.controlBarForm.selectDate[1];
         }
-        if(this.controlBarForm.role!==''){
+        if(!!this.controlBarForm.role){
           postData.roleId=this.controlBarForm.role;
         }
         this.$axios.post(this.$apis.searchUser, postData).then(data => {
@@ -455,69 +457,5 @@
 </script>
 
 <style type="text/scss" lang="scss" scoped>
-  .body-title {
-    background: #fff;
-    padding: 10px 15px;
-    h4 {
-      margin: 0;
-      padding-left: 8px;
-      position: relative;
-      &:before {
-        content: '';
-        position: absolute;
-        left: 0;
-        top: 3px;
-        width: 2px;
-        height: 1em;
-        background-color: $--color-primary;
-      }
-    }
-  }
 
-  .user-page {
-    display: flex;
-    flex-flow: column;
-    width: 100%;
-    .content-body {
-      flex: 1;
-      display: flex;
-      flex-flow: column;
-      .control-bar, .table-box {
-        background: #fff;
-        margin-top: 15px;
-      }
-      .control-bar {
-        padding-left: 15px;
-        .el-form-item {
-          margin-bottom: 0;
-          padding: 15px 0;
-        }
-      }
-      .table-box {
-        flex: 1;
-        display: flex;
-        flex-flow: column;
-        padding: 15px;
-        .el-table {
-          flex: 1;
-          margin-top: 15px;
-        }
-        .el-pagination {
-          margin-top: 15px;
-          text-align: right;
-        }
-      }
-    }
-  }
-  .el-dialog{
-    .lists{
-      .item{
-        display: flex;
-        margin-bottom: 15px;
-        .label{
-          flex: 0 0 6em;
-        }
-      }
-    }
-  }
 </style>

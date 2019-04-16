@@ -33,13 +33,13 @@ public class RoleController {
     }
     @RequestMapping("/findRoleAll")
     @ResponseBody
-    public ModelResult findRoleAll(HttpServletRequest request,int pageSize,int pageNum) throws IOException {
+    public ModelResult findRoleAll(HttpServletRequest request,@RequestBody Map map) throws IOException {
         RoleDaoImpl Roletest=new RoleDaoImpl();
-        PageInfo<Role> list=Roletest.findRoleAll(pageNum,pageSize);
-        Map<String,Object> map = new HashMap<>();
-        map.put("total",list.getTotal());
-        map.put("list",list.getList());
-        return ModelResult.newSuccess(map);
+        PageInfo<Role> list=Roletest.findRoleAll(map);
+        Map<String,Object> map1 = new HashMap<>();
+        map1.put("total",list.getTotal());
+        map1.put("list",list.getList());
+        return ModelResult.newSuccess(map1);
     }
 
     @RequestMapping("/addRole")
@@ -78,8 +78,17 @@ public class RoleController {
     public ModelResult deleteRole(HttpServletRequest request, HttpServletResponse response,@RequestBody Map map) throws IOException {
         int id = (int) map.get("id");
         RoleDaoImpl Roletest=new RoleDaoImpl();
-        int num=Roletest.deleteRole(id);
-        return num>0?ModelResult.newSuccess(true):ModelResult.newError("删除失败");
+        int num1=Roletest.deleteUserRole(id);
+        int num2=Roletest.deleteRole(id);
+        if(num1>0){
+            if(num2>0){
+                return ModelResult.newSuccess(true);
+            }else {
+                return ModelResult.newError("删除角色失败");
+            }
+        }else {
+            return ModelResult.newError("删除关联用户角色失败");
+        }
     }
 
     @RequestMapping("/batchDeleteRole")
