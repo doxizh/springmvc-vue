@@ -33,7 +33,7 @@
       <div class="table-box">
         <div class="btn-box">
           <el-button type="success" @click="addUserDialog=true">新增</el-button>
-          <el-button type="primary" @click="batchAddUser" :loading="batchAddUserLoading">{{batchAddUserLoading?"新增中":"批量新增"}}</el-button>
+          <el-button type="primary" @click="openBatchAddDialog" :loading="batchAddUserLoading">{{batchAddUserLoading?"新增中":"批量新增"}}</el-button>
           <el-button type="danger" @click="batchDelete" :loading="batchDeleteLoading">{{batchDeleteLoading?"删除中":"批量删除"}}</el-button>
         </div>
         <el-table :data="userData" height="0" @selection-change="handleSelectionChange">
@@ -90,10 +90,45 @@
         </el-pagination>
       </div>
     </div>
+    <el-dialog title="批量新增用户" :visible.sync="batchAddUserDialog">
+      <el-form status-icon :model="batchAddUserDialogForm" ref="batchAddUserDialogForm" :rules="batchAddUserDialogRules" label-width="5em">
+        <el-form-item label="用户名" prop="name">
+          <el-input v-model="batchAddUserDialogForm.name" autocomplete="off"></el-input>
+        </el-form-item>
+        <el-form-item label="昵称" prop="nickname">
+          <el-input v-model="batchAddUserDialogForm.nickname" autocomplete="off"></el-input>
+        </el-form-item>
+        <el-form-item label="数量" prop="num">
+          <el-input v-model="batchAddUserDialogForm.num" autocomplete="off" placeholder="默认100"></el-input>
+        </el-form-item>
+        <el-form-item label="起始序号" prop="index">
+          <el-input v-model="batchAddUserDialogForm.index" autocomplete="off" placeholder="默认1"></el-input>
+        </el-form-item>
+        <el-form-item label="角色" prop="roleIds">
+          <el-checkbox-group v-model="batchAddUserDialogForm.roleIds">
+            <el-checkbox v-for="item in roles" :key="item.id.toString()" :value="item.id.toString()" :label="item.id.toString()" name="roleIds">{{item.roleName}}</el-checkbox>
+          </el-checkbox-group>
+        </el-form-item>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="batchAddUserDialog=false">取 消</el-button>
+        <el-button type="primary" @click="batchAddUser" :loading="batchAddUserDialogFormLoading">
+          {{batchAddUserDialogFormLoading?'请稍后':'确 定'}}
+        </el-button>
+      </div>
+    </el-dialog>
     <el-dialog title="新增用户" :visible.sync="addUserDialog">
-      <el-form status-icon :model="addUserDialogForm" ref="addUserDialogForm" :rules="addUserDialogRules">
-        <el-form-item label="用户名" label-width="5em" prop="name">
+      <el-form status-icon :model="addUserDialogForm" ref="addUserDialogForm" :rules="addUserDialogRules" label-width="5em">
+        <el-form-item label="用户名" prop="name">
           <el-input v-model="addUserDialogForm.name" autocomplete="off"></el-input>
+        </el-form-item>
+        <el-form-item label="昵称" prop="nickname">
+          <el-input v-model="addUserDialogForm.nickname" autocomplete="off"></el-input>
+        </el-form-item>
+        <el-form-item label="角色" prop="roleIds">
+          <el-checkbox-group v-model="addUserDialogForm.roleIds">
+            <el-checkbox v-for="item in roles" :key="item.id.toString()" :value="item.id.toString()" :label="item.id.toString()" name="roleIds">{{item.roleName}}</el-checkbox>
+          </el-checkbox-group>
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
@@ -164,34 +199,73 @@
           callback();
         }
       };
+      const checkNum = (rule, value, callback) => {
+        if (value !== '') {
+          let reg=/^\d+$/g;
+          if(reg.test(value)){
+            callback();
+          }else {
+            callback(new Error("请输入正整数"));
+          }
+        } else {
+          callback();
+        }
+      };
       return {
         userData: [],
         pageSize: 15,
         pageSizes: [15, 30, 45, 60],
         pageNum: 1,
         total: 0,
-        addUserDialog: false,
-        editUserDialog: false,
         controlBarForm: {
           name: '',
           selectDate: '',
           nickname: '',
           role:''
         },
+        addUserDialog: false,
+        addUserDialogFormLoading: false,
         addUserDialogForm: {
           name: '',
-          nickname: ''
+          nickname: '',
+          roleIds: [],
         },
+        addUserDialogRules: {
+          name: [
+            {required: true, validator: checkName, trigger: 'blur'},
+          ],
+          roleIds:[
+            { type: 'array', required: true, message: '请至少选择一个角色', trigger: 'change' }
+          ]
+        },
+        batchAddUserDialog: false,
+        batchAddUserDialogFormLoading: false,
+        batchAddUserDialogForm: {
+          name: '',
+          nickname: '',
+          num: '',
+          index: '',
+          roleIds: [],
+        },
+        batchAddUserDialogRules: {
+          name: [
+            {required: true, validator: checkName, trigger: 'blur'},
+          ],
+          roleIds:[
+            { type: 'array', required: true, message: '请至少选择一个角色', trigger: 'change' }
+          ],
+          num:[
+            { validator: checkNum, trigger: 'blur' }
+          ],
+          index:[
+            { validator: checkNum, trigger: 'blur' }
+          ]
+        },
+        editUserDialog: false,
+        editUserDialogLoading: false,
         editUserDialogForm: {
           nickname: '',
           roleIds:[],
-        },
-        addUserDialogFormLoading: false,
-        editUserDialogLoading: false,
-        addUserDialogRules: {
-          name: [
-            {validator: checkName, trigger: 'blur'}
-          ]
         },
         editUserDialogRules: {
           roleIds:[
@@ -212,6 +286,9 @@
       this.getRoles();
     },
     methods: {
+      openBatchAddDialog() {
+        this.batchAddUserDialog = true;
+      },
       getRoles(){
         let postData = {
           pageSize: 999,
@@ -329,26 +406,51 @@
         })
       },
       batchAddUser() {
-        this.batchAddUserLoading=true;
-        this.$axios.post(this.$apis.batchAddUser).then(data => {
-          this.batchAddUserLoading=false;
-          if (data.data.success) {
-            this.findUserAll();
+        this.$refs.batchAddUserDialogForm.validate(valid=>{
+          if(valid){
+            this.batchAddUserLoading=true;
+            let postData={
+              name:this.batchAddUserDialogForm.name,
+              roleIds:this.batchAddUserDialogForm.roleIds,
+              num:Number(this.batchAddUserDialogForm.num)||100,
+              index:Number(this.batchAddUserDialogForm.index)||1,
+            };
+            if(!!this.batchAddUserDialogForm.nickname){
+              postData.nickname=this.batchAddUserDialogForm.nickname;
+            }
+            this.$axios.post(this.$apis.batchAddUser,postData).then(data => {
+              this.batchAddUserLoading=false;
+              if (data.data.success) {
+                this.$refs.batchAddUserDialogForm.resetFields();
+                this.pageNum=1;
+                this.batchAddUserDialog = false;
+                this.findUserAll();
+              }else {
+                this.$notify.error({
+                  title: '错误',
+                  message: data.data.msg
+                });
+              }
+            }).catch(()=>{
+              this.$notify.error({
+                message:"网络异常",
+              });
+              this.batchAddUserLoading=false;
+            })
           }
-        }).catch(()=>{
-          this.$notify.error({
-            message:"网络异常",
-          });
-          this.batchAddUserLoading=false;
-        })
+        });
       },
       addUser() {
         this.$refs.addUserDialogForm.validate(valid => {
           if (valid) {
             this.addUserDialogFormLoading = true;
             let postData = {
-              name: this.addUserDialogForm.name
+              name: this.addUserDialogForm.name,
+              roleIds:this.addUserDialogForm.roleIds,
             };
+            if(!!this.addUserDialogForm.nickname){
+              postData.nickname=this.addUserDialogForm.nickname;
+            }
             this.$axios.post(this.$apis.addUser, postData).then(data => {
               this.addUserDialogFormLoading = false;
               if (data.data.success) {

@@ -12,10 +12,11 @@ import java.util.Map;
 public interface UserDao {
     public User findUserByIdTest(int id);
     public User findUserByName(String name);
+    public List<User> findUserByNames(List list);
     public PageInfo<User> findUserAll(int pageNum,int pageSize);
     public int register(User user);
     public int updatePassword(User user);
-    public Boolean batchAddUser();
+    public Boolean batchAddUser(List<User> list,List roleList);
     public PageInfo<User> searchUserByName(String name,int pageSize);
     public PageInfo<User> searchUser(Map map);
     public int deleteUser(int id);

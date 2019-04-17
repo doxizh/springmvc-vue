@@ -24,7 +24,7 @@
     <dependency>
       <groupId>org.mybatis</groupId>
       <artifactId>mybatis</artifactId>
-      <version>3.3.0</version>
+      <version>3.5.1</version>
     </dependency>
     <!-- 日志文件管理包 -->
     <dependency>

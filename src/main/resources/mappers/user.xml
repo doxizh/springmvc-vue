@@ -18,6 +18,12 @@
     <select id="findUserByName" parameterType="String"  resultType="user">
         SELECT name,password FROM user WHERE name = #{value}
     </select>
+    <select id="findUserByNames" parameterType="List"  resultType="user">
+        SELECT name FROM user WHERE name in
+        <foreach collection="list"  item="item" open="(" separator="," close=")"  >
+            #{item}
+        </foreach>
+    </select>
     <select id="findUserAll" resultType="user">
         SELECT
             u.id,
@@ -39,7 +45,13 @@
             u.id
     </select>
     <insert id="register" parameterType="user" useGeneratedKeys="true" keyProperty="id">
-        INSERT INTO user (name,password,createDate,updateDate) VALUES (#{name},#{password},now(),now());
+        INSERT INTO user (name,password,nickname,createDate,updateDate) VALUES (#{name},#{password},#{nickname},now(),now())
+    </insert>
+    <insert id="batchAddUser" parameterType="List" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO user (name,password,nickname,createDate,updateDate) VALUES
+        <foreach collection="list"  item="item" separator=",">
+            (#{item.name},#{item.password},#{item.nickname},now(),now())
+        </foreach>
     </insert>
     <update id="updatePassword" parameterType="user">
         UPDATE user SET password=#{password},updateDate=now() WHERE name = #{name}

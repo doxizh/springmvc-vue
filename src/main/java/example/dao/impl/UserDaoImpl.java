@@ -8,6 +8,7 @@ import example.pojo.UserRole;
 import org.apache.ibatis.session.SqlSession;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -57,6 +58,20 @@ public class UserDaoImpl implements UserDao {
     }
 
     @Override
+    public List<User> findUserByNames(List list) {
+        SqlSession sqlSession = null;
+        try {
+            sqlSession = getSqlSessionFactory().openSession();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        assert sqlSession != null;
+        List<User> userList = sqlSession.selectList("user.findUserByNames",list);
+        sqlSession.close();
+        return userList;
+    }
+
+    @Override
     public PageInfo<User> findUserAll(int pageNum,int pageSize) {
         SqlSession sqlSession = null;
         try {
@@ -103,7 +118,7 @@ public class UserDaoImpl implements UserDao {
     }
 
     @Override
-    public Boolean batchAddUser() {
+    public Boolean batchAddUser(List<User> list,List roleList) {
         SqlSession sqlSession = null;
         try {
             sqlSession = getSqlSessionFactory().openSession();
@@ -111,16 +126,19 @@ public class UserDaoImpl implements UserDao {
             e.printStackTrace();
         }
         assert sqlSession != null;
-
-        for(int i=1;i<101;i++){
-            User user= new User();
-            user.setPassword("123456");
-            user.setName("测试".concat(String.valueOf(i)));
+        for (int i = 0; i < list.size(); i++) {
+            User user=list.get(i);
             sqlSession.insert("user.register",user);
-            UserRole userRole = new UserRole();
-            userRole.setUserId(user.getId());
-            userRole.setRoleId(0);
-            sqlSession.insert("UserRole.addUserRole",userRole);
+            if(roleList!=null&&roleList.size()>0){
+                List<Map<String,Object>> list1 = new ArrayList<>();
+                for (int j = 0; j < roleList.size(); j++) {
+                    Map<String,Object> map1=new HashMap<>();
+                    map1.put("userId",user.getId());
+                    map1.put("roleId",roleList.get(j));
+                    list1.add(map1);
+                }
+                sqlSession.insert("UserRole.batchAddUserRole",list1);
+            }
         }
         sqlSession.commit();
         sqlSession.close();

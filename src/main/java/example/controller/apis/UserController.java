@@ -164,6 +164,8 @@ public class UserController {
     @ResponseBody
     public ModelResult addUser(HttpServletRequest request, HttpServletResponse response,@RequestBody Map map) throws IOException {
         String name= (String) map.get("name");
+        String nickname= (String) map.get("nickname");
+        List list = (List) map.get("roleIds");
         UserDaoImpl userDao=new UserDaoImpl();
         User user=userDao.findUserByName(name);
         if(user!=null){
@@ -172,29 +174,51 @@ public class UserController {
             User user1=new User();
             user1.setPassword("123456");
             user1.setName(name);
-            int num = userDao.register(user1);
-            if (num > 0) {
-                UserRole userRole = new UserRole();
-                userRole.setUserId(user1.getId());
-                userRole.setRoleId(0);
-                int num1 = userDao.createUserRole(userRole);
-                if(num1>0){
-                    return ModelResult.newSuccess(true);
-                }else {
-                    return ModelResult.newError("403", "创建默认角色失败", false);
+            user1.setNickname(nickname);
+            userDao.register(user1);
+            if(list!=null&&list.size()>0){
+                userDao.deleteUserRole((int) user1.getId());
+                List<Map<String,Object>> list1 = new ArrayList<>();
+                for (int i = 0; i < list.size(); i++) {
+                    Map<String,Object> map1=new HashMap<>();
+                    map1.put("userId",user1.getId());
+                    map1.put("roleId",list.get(i));
+                    list1.add(map1);
                 }
-            }else {
-                return ModelResult.newError("新增失败");
+                userDao.createUserRole(list1);
             }
+            return ModelResult.newSuccess(true);
         }
     }
 
     @RequestMapping("/batchAddUser")
     @ResponseBody
-    public ModelResult batchAddUser(HttpServletRequest request, HttpServletResponse response) throws IOException {
-        UserDaoImpl usertest=new UserDaoImpl();
-        usertest.batchAddUser();
-        return ModelResult.newSuccess(true);
+    public ModelResult batchAddUser(HttpServletRequest request, HttpServletResponse response,@RequestBody Map map) throws IOException {
+        String name= (String) map.get("name");
+        String nickname= (String) map.get("nickname");
+        int num = (int) map.get("num");
+        int index = (int) map.get("index");
+        List roleList = (List) map.get("roleIds");
+        List<String> nameList= new ArrayList<>();
+        List<User> addUserList= new ArrayList<>();
+        for (int i = index; i < num+index ; i++) {
+            String name1=name.concat(String.valueOf(i));
+            String nickname1=nickname.concat(String.valueOf(i));
+            nameList.add(name1);
+            User user1=new User();
+            user1.setPassword("123456");
+            user1.setName(name1);
+            user1.setNickname(nickname1);
+            addUserList.add(user1);
+        }
+        UserDaoImpl userDao=new UserDaoImpl();
+        List<User> userList=userDao.findUserByNames(nameList);
+        if(userList!=null&&userList.size()>0){
+            return ModelResult.newError("403","用户名已存在",false);
+        }else {
+            Boolean flag=userDao.batchAddUser(addUserList,roleList);
+            return flag?ModelResult.newSuccess(true):ModelResult.newError(false);
+        }
     }
 
     @RequestMapping("/searchUserByName")
@@ -229,21 +253,9 @@ public class UserController {
     public ModelResult deleteUser(HttpServletRequest request, HttpServletResponse response,@RequestBody Map map) throws IOException {
         int id = (int) map.get("id");
         UserDaoImpl usertest=new UserDaoImpl();
-        int num=usertest.deleteUserRole(id);
-        int num1=usertest.deleteUser(id);
-        return getModelResult(num, num1);
-    }
-
-    private ModelResult getModelResult(int num, int num1) {
-        if(num>0){
-            if(num1>0){
-                return ModelResult.newSuccess(true);
-            }else {
-                return ModelResult.newError("删除失败");
-            }
-        }else {
-            return ModelResult.newError("删除对应角色失败");
-        }
+        usertest.deleteUserRole(id);
+        usertest.deleteUser(id);
+        return ModelResult.newSuccess(true);
     }
 
     @RequestMapping("/batchDeleteUser")
@@ -251,9 +263,9 @@ public class UserController {
     public ModelResult batchDeleteUser(HttpServletRequest request, HttpServletResponse response,@RequestBody Map map) throws IOException {
         List list = (List) map.get("ids");
         UserDaoImpl usertest=new UserDaoImpl();
-        int num=usertest.batchDeleteUserRole(list);
-        int num1=usertest.batchDeleteUser(list);
-        return getModelResult(num, num1);
+        usertest.batchDeleteUserRole(list);
+        usertest.batchDeleteUser(list);
+        return ModelResult.newSuccess(true);
     }
 
     @RequestMapping("/editUser")
@@ -263,9 +275,9 @@ public class UserController {
         String nickname = (String) map.get("nickname");
         List list = (List) map.get("roleIds");
         UserDaoImpl usertest=new UserDaoImpl();
-        int num=usertest.editUser(id,nickname);
+        usertest.editUser(id,nickname);
         if(list!=null&&list.size()>0){
-            int num1=usertest.deleteUserRole(id);
+            usertest.deleteUserRole(id);
             List<Map<String,Object>> list1 = new ArrayList<>();
             for (int i = 0; i < list.size(); i++) {
                 Map<String,Object> map1=new HashMap<>();
@@ -273,8 +285,8 @@ public class UserController {
                 map1.put("roleId",list.get(i));
                 list1.add(map1);
             }
-            int num2=usertest.createUserRole(list1);
+            usertest.createUserRole(list1);
         }
-        return num>0?ModelResult.newSuccess(true):ModelResult.newError("删除失败");
+        return ModelResult.newSuccess(true);
     }
 }

@@ -2,6 +2,7 @@ package example.dao;
 
 import com.github.pagehelper.PageInfo;
 import example.pojo.Role;
+import example.pojo.User;
 
 import java.util.List;
 import java.util.Map;
