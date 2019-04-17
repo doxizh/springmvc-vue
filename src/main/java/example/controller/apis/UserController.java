@@ -179,12 +179,7 @@ public class UserController {
             if(list!=null&&list.size()>0){
                 userDao.deleteUserRole((int) user1.getId());
                 List<Map<String,Object>> list1 = new ArrayList<>();
-                for (int i = 0; i < list.size(); i++) {
-                    Map<String,Object> map1=new HashMap<>();
-                    map1.put("userId",user1.getId());
-                    map1.put("roleId",list.get(i));
-                    list1.add(map1);
-                }
+                UserDaoImpl.getRoleList(list, user1, list1);
                 userDao.createUserRole(list1);
             }
             return ModelResult.newSuccess(true);

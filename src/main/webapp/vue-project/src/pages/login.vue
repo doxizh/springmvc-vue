@@ -3,7 +3,7 @@
   <el-container>
     <el-card class="form-box">
       <div class="login-header">登 录</div>
-      <el-form status-icon ref="loginForm" :model="loginForm" :rules="loginFormRules" label-width="4em">
+      <el-form status-icon ref="loginForm" :model="loginForm" :rules="loginFormRules" label-width="4em" @keyup.enter.native="login">
         <el-form-item label="用户名" prop="name">
           <el-input v-model="loginForm.name" placeholder="请输入用户名"></el-input>
         </el-form-item>

@@ -72,7 +72,7 @@ public class RoleDaoImpl implements RoleDao {
     }
 
     @Override
-    public int addRole(Role role) {
+    public int addRole(Map map) {
         SqlSession sqlSession = null;
         try {
             sqlSession = getSqlSessionFactory().openSession();
@@ -80,7 +80,7 @@ public class RoleDaoImpl implements RoleDao {
             e.printStackTrace();
         }
         assert sqlSession != null;
-        int num=sqlSession.insert("Role.addRole",role);
+        int num=sqlSession.insert("Role.addRole",map);
         sqlSession.commit();
         sqlSession.close();
 
@@ -96,10 +96,9 @@ public class RoleDaoImpl implements RoleDao {
             e.printStackTrace();
         }
         assert sqlSession != null;
-        PageHelper.startPage(1, (int) map.get("pageSize"));
+        PageHelper.startPage((int) map.get("pageNum"), (int) map.get("pageSize"));
         List<Role> list= sqlSession.selectList("Role.searchRole",map);
         sqlSession.close();
-
         return new PageInfo<>(list);
     }
 
@@ -149,7 +148,7 @@ public class RoleDaoImpl implements RoleDao {
     }
 
     @Override
-    public int editRole(int id,String roleName) {
+    public int batchDeleteRoleUser(List list) {
         SqlSession sqlSession = null;
         try {
             sqlSession = getSqlSessionFactory().openSession();
@@ -157,10 +156,22 @@ public class RoleDaoImpl implements RoleDao {
             e.printStackTrace();
         }
         assert sqlSession != null;
-        Role Role =new Role();
-        Role.setId(id);
-        Role.setRoleName(roleName);
-        int num= sqlSession.update("Role.editRole",Role);
+        int num= sqlSession.delete("UserRole.batchDeleteRoleUser",list);
+        sqlSession.commit();
+        sqlSession.close();
+        return num;
+    }
+
+    @Override
+    public int editRole(Map map) {
+        SqlSession sqlSession = null;
+        try {
+            sqlSession = getSqlSessionFactory().openSession();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        assert sqlSession != null;
+        int num= sqlSession.update("Role.editRole",map);
         sqlSession.commit();
         sqlSession.close();
         return num;

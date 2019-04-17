@@ -16,7 +16,7 @@
         SELECT id,roleName FROM role WHERE id = #{value}
     </select>
     <select id="findRoleByName" parameterType="String"  resultType="role">
-        SELECT id,roleName FROM role WHERE name = #{value}
+        SELECT id,roleName FROM role WHERE roleName = #{value}
     </select>
     <select id="findRoleAll" parameterType="Map" resultType="role">
         SELECT id,roleName FROM role
@@ -30,10 +30,13 @@
         SELECT id,roleName FROM role
         <where>
             <if test="roleName!=null">
-                name LIKE "%"#{name}"%"
+                roleName LIKE "%"#{name}"%"
             </if>
         </where>
     </select>
+    <insert id="addRole" parameterType="Map">
+        INSERT INTO role (roleName) VALUES (#{roleName})
+    </insert>
     <delete id="batchDeleteRole" parameterType="List" >
         DELETE FROM role WHERE id in
         <foreach collection="list"  item="item" open="(" separator="," close=")"  >
@@ -43,7 +46,7 @@
     <delete id="deleteRole" parameterType="int" >
         DELETE FROM role WHERE id=#{id}
     </delete>
-    <update id="editRole" parameterType="role" >
+    <update id="editRole" parameterType="Map" >
         UPDATE role SET roleName=#{roleName} WHERE id = #{id}
     </update>
 </mapper>

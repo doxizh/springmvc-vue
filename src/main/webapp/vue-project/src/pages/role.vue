@@ -60,8 +60,8 @@
     </div>
     <el-dialog title="新增角色" :visible.sync="addRoleDialog">
       <el-form status-icon :model="addRoleDialogForm" ref="addRoleDialogForm" :rules="addRoleDialogRules">
-        <el-form-item label="角色名" label-width="5em" prop="name">
-          <el-input v-model="addRoleDialogForm.name" autocomplete="off"></el-input>
+        <el-form-item label="角色名" label-width="5em" prop="roleName">
+          <el-input v-model="addRoleDialogForm.roleName" autocomplete="off"></el-input>
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
@@ -121,27 +121,27 @@
         pageSizes: [15, 30, 45, 60],
         pageNum: 1,
         total: 0,
-        addRoleDialog: false,
-        editRoleDialog: false,
         controlBarForm: {
           roleName: ''
         },
+        addRoleDialog: false,
+        addRoleDialogFormLoading: false,
         addRoleDialogForm: {
           roleName: ''
         },
+        addRoleDialogRules: {
+          roleName: [
+            {required:true,validator: checkName, trigger: 'blur'}
+          ]
+        },
+        editRoleDialog: false,
+        editRoleDialogLoading: false,
         editRoleDialogForm: {
           roleName: ''
         },
-        addRoleDialogFormLoading: false,
-        editRoleDialogLoading: false,
-        addRoleDialogRules: {
-          roleName: [
-            {validator: checkName, trigger: 'blur'}
-          ]
-        },
         editRoleDialogRules: {
           roleName: [
-            {validator: checkName, trigger: 'blur'}
+            {required:true,validator: checkName, trigger: 'blur'}
           ]
         },
         selectedItems: [],
@@ -214,7 +214,7 @@
                 message: '删除成功!'
               });
               this.pageNum = 1;
-              this.findRoleAll();
+              this.searchRole();
             } else {
 
             }
@@ -236,18 +236,18 @@
       handleSizeChange(val) {
         this.pageSize = val;
         this.pageNum = 1;
-        this.findRoleAll();
+        this.searchRole();
       },
       handleCurrentChange(val) {
         this.pageNum = val;
-        this.findRoleAll();
+        this.searchRole();
       },
       addRole() {
         this.$refs.addRoleDialogForm.validate(valid => {
           if (valid) {
             this.addRoleDialogFormLoading = true;
             let postData = {
-              name: this.addRoleDialogForm.name
+              roleName: this.addRoleDialogForm.roleName
             };
             this.$axios.post(this.$apis.addRole, postData).then(data => {
               this.addRoleDialogFormLoading = false;
@@ -260,7 +260,7 @@
                 this.$refs.addRoleDialogForm.resetFields();
                 this.addRoleDialog = false;
                 this.pageNum = 1;
-                this.findRoleAll();
+                this.searchRole();
               } else {
                 this.$notify.error({
                   title: '错误',
@@ -325,7 +325,7 @@
                   message: '删除成功!'
                 });
                 this.pageNum = 1;
-                this.findRoleAll();
+                this.searchRole();
               } else {
 
               }

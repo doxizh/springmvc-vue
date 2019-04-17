@@ -131,18 +131,22 @@ public class UserDaoImpl implements UserDao {
             sqlSession.insert("user.register",user);
             if(roleList!=null&&roleList.size()>0){
                 List<Map<String,Object>> list1 = new ArrayList<>();
-                for (int j = 0; j < roleList.size(); j++) {
-                    Map<String,Object> map1=new HashMap<>();
-                    map1.put("userId",user.getId());
-                    map1.put("roleId",roleList.get(j));
-                    list1.add(map1);
-                }
+                getRoleList(roleList, user, list1);
                 sqlSession.insert("UserRole.batchAddUserRole",list1);
             }
         }
         sqlSession.commit();
         sqlSession.close();
         return true;
+    }
+
+    public static void getRoleList(List roleList, User user, List<Map<String, Object>> list1) {
+        for (int j = 0; j < roleList.size(); j++) {
+            Map<String,Object> map1=new HashMap<>();
+            map1.put("userId",user.getId());
+            map1.put("roleId",roleList.get(j));
+            list1.add(map1);
+        }
     }
 
     @Override

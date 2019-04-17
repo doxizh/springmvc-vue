@@ -24,89 +24,75 @@ public class RoleController {
     @RequestMapping("/findRoleById")
     @ResponseBody
     public ModelResult findRoleById(HttpServletRequest request) throws IOException {
-        RoleDaoImpl Roletest=new RoleDaoImpl();
-        Role Role=Roletest.findRoleById(1);
-        Map<String,Object> map=new HashMap<String,Object>();
-        map.put("id",Role.getId());
-        map.put("name",Role.getRoleName());
+        RoleDaoImpl Roletest = new RoleDaoImpl();
+        Role Role = Roletest.findRoleById(1);
+        Map<String, Object> map = new HashMap<String, Object>();
+        map.put("id", Role.getId());
+        map.put("name", Role.getRoleName());
         return ModelResult.newSuccess(map);
     }
+
     @RequestMapping("/findRoleAll")
     @ResponseBody
-    public ModelResult findRoleAll(HttpServletRequest request,@RequestBody Map map) throws IOException {
-        RoleDaoImpl Roletest=new RoleDaoImpl();
-        PageInfo<Role> list=Roletest.findRoleAll(map);
-        Map<String,Object> map1 = new HashMap<>();
-        map1.put("total",list.getTotal());
-        map1.put("list",list.getList());
+    public ModelResult findRoleAll(HttpServletRequest request, @RequestBody Map map) throws IOException {
+        RoleDaoImpl roleDao = new RoleDaoImpl();
+        PageInfo<Role> list = roleDao.findRoleAll(map);
+        Map<String, Object> map1 = new HashMap<>();
+        map1.put("total", list.getTotal());
+        map1.put("list", list.getList());
         return ModelResult.newSuccess(map1);
     }
 
     @RequestMapping("/addRole")
     @ResponseBody
-    public ModelResult addRole(HttpServletRequest request, HttpServletResponse response,@RequestBody Map map) throws IOException {
-        String roleName= (String) map.get("roleName");
-        RoleDaoImpl roleDaoImpl=new RoleDaoImpl();
-        Role Role=roleDaoImpl.findRoleByName(roleName);
-        if(Role!=null){
-            return ModelResult.newError("403","角色名已存在",false);
-        }else {
-            Role Role1=new Role();
-            Role1.setRoleName(roleName);
-            int num=roleDaoImpl.addRole(Role1);
-            if(num>0){
-                return ModelResult.newSuccess(true);
-            }else {
-                return ModelResult.newError("新增失败");
-            }
+    public ModelResult addRole(HttpServletRequest request, HttpServletResponse response, @RequestBody Map map) throws IOException {
+        String roleName = (String) map.get("roleName");
+        RoleDaoImpl roleDao = new RoleDaoImpl();
+        Role role = roleDao.findRoleByName(roleName);
+        if (role != null) {
+            return ModelResult.newError("403", "角色名已存在", false);
+        } else {
+            roleDao.addRole(map);
+            return ModelResult.newSuccess(true);
         }
     }
 
     @RequestMapping("/searchRole")
     @ResponseBody
-    public ModelResult searchRole(HttpServletRequest request, HttpServletResponse response,@RequestBody Map map) throws IOException {
-        RoleDaoImpl Roletest=new RoleDaoImpl();
-        PageInfo<Role> list=Roletest.searchRole(map);
-        Map<String,Object> result = new HashMap<>();
-        result.put("total",list.getTotal());
-        result.put("list",list.getList());
+    public ModelResult searchRole(HttpServletRequest request, HttpServletResponse response, @RequestBody Map map) throws IOException {
+        RoleDaoImpl roleDao = new RoleDaoImpl();
+        PageInfo<Role> list = roleDao.searchRole(map);
+        Map<String, Object> result = new HashMap<>();
+        result.put("total", list.getTotal());
+        result.put("list", list.getList());
         return ModelResult.newSuccess(result);
     }
 
     @RequestMapping("/deleteRole")
     @ResponseBody
-    public ModelResult deleteRole(HttpServletRequest request, HttpServletResponse response,@RequestBody Map map) throws IOException {
+    public ModelResult deleteRole(HttpServletRequest request, HttpServletResponse response, @RequestBody Map map) throws IOException {
         int id = (int) map.get("id");
-        RoleDaoImpl Roletest=new RoleDaoImpl();
-        int num1=Roletest.deleteUserRole(id);
-        int num2=Roletest.deleteRole(id);
-        if(num1>0){
-            if(num2>0){
-                return ModelResult.newSuccess(true);
-            }else {
-                return ModelResult.newError("删除角色失败");
-            }
-        }else {
-            return ModelResult.newError("删除关联用户角色失败");
-        }
+        RoleDaoImpl roleDao = new RoleDaoImpl();
+        roleDao.deleteUserRole(id);
+        roleDao.deleteRole(id);
+        return ModelResult.newSuccess(true);
     }
 
     @RequestMapping("/batchDeleteRole")
     @ResponseBody
-    public ModelResult batchDeleteRole(HttpServletRequest request, HttpServletResponse response,@RequestBody Map map) throws IOException {
+    public ModelResult batchDeleteRole(HttpServletRequest request, HttpServletResponse response, @RequestBody Map map) throws IOException {
         List list = (List) map.get("ids");
-        RoleDaoImpl Roletest=new RoleDaoImpl();
-        int num=Roletest.batchDeleteRole(list);
-        return num>0?ModelResult.newSuccess(true):ModelResult.newError("删除失败");
+        RoleDaoImpl roleDao = new RoleDaoImpl();
+        roleDao.batchDeleteRoleUser(list);
+        roleDao.batchDeleteRole(list);
+        return ModelResult.newSuccess(true);
     }
 
     @RequestMapping("/editRole")
     @ResponseBody
-    public ModelResult editRole(HttpServletRequest request, HttpServletResponse response,@RequestBody Map map) throws IOException {
-        int id = (int) map.get("id");
-        String roleName = (String) map.get("roleName");
-        RoleDaoImpl Roletest=new RoleDaoImpl();
-        int num=Roletest.editRole(id,roleName);
-        return num>0?ModelResult.newSuccess(true):ModelResult.newError("删除失败");
+    public ModelResult editRole(HttpServletRequest request, HttpServletResponse response, @RequestBody Map map) throws IOException {
+        RoleDaoImpl roleDao = new RoleDaoImpl();
+        roleDao.editRole(map);
+        return ModelResult.newSuccess(true);
     }
 }

@@ -30,6 +30,12 @@
             #{item}
         </foreach>
     </delete>
+    <delete id="batchDeleteRoleUser" parameterType="List" >
+        DELETE FROM user_role WHERE roleId in
+        <foreach collection="list"  item="item" open="(" separator="," close=")"  >
+            #{item}
+        </foreach>
+    </delete>
     <delete id="deleteUserRole" parameterType="int" >
         DELETE FROM user_role WHERE userId=#{userId}
     </delete>
