@@ -57,6 +57,8 @@
         <!--通过resource方法一次加载一个映射文件 -->
         <!--注意这里的路径和xml文件 -->
         <mapper resource="mappers/user.xml" />
+        <mapper resource="mappers/role.xml" />
+        <mapper resource="mappers/userRole.xml" />
 
         <!-- 批量加载mapper 指定mapper接口的包名，mybatis自动扫描包下边所有mapper接口进行加载 -->
         <!-- 遵循一些规范：需要将mapper接口类名和mapper.xml映射文件名称保持一致，且在一个目录 -->

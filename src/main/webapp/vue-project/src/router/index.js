@@ -5,14 +5,16 @@ import Home from '@/pages/home'
 import Login from '@/pages/login'
 import Register from '@/pages/register'
 import User from '@/pages/user'
+import Role from '@/pages/role'
 
 Vue.use(Router)
 const router = new Router({
   routes: [
     {
       path: '/',
-      name: 'Home',
-      component: Home,
+      redirect:{
+        name:'Home'
+      }
     },
     {
       path: '/home',
@@ -23,6 +25,11 @@ const router = new Router({
           path: 'user',
           name: 'User',
           component: User,
+        },
+        {
+          path: 'role',
+          name: 'Role',
+          component: Role,
         }
       ]
     },

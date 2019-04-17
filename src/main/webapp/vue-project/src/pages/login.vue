@@ -3,7 +3,7 @@
   <el-container>
     <el-card class="form-box">
       <div class="login-header">登 录</div>
-      <el-form status-icon ref="loginForm" :model="loginForm" :rules="loginFormRules" label-width="4em">
+      <el-form status-icon ref="loginForm" :model="loginForm" :rules="loginFormRules" label-width="4em" @keyup.enter.native="login">
         <el-form-item label="用户名" prop="name">
           <el-input v-model="loginForm.name" placeholder="请输入用户名"></el-input>
         </el-form-item>
@@ -71,7 +71,7 @@
               password:this.loginForm.password
             };
             this.loginLoading=true;
-            this.$axios.post(this.$proxy+this.$apis.login,postData).then(data=>{
+            this.$axios.post(this.$apis.login,postData).then(data=>{
               this.loginLoading=false;
               if(data.data.success){
                 this.SAVE_USER_INFO(data.data.result.userData);

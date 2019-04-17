@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="UserRole">
+
+    <!-- 在映射文件中配置很多sql语句 -->
+    <!-- 将sql语句封装到mappedStatement对象中，所以将id称为statement的id -->
+    <!-- parameterType：指定输入参数的类型，这里指定int型 #{}表示一个占位符号 -->
+    <!-- #{id}：其中的id表示接收输入的参数，参数名称就是id，如果输入 -->
+    <!-- 参数是简单类型，#{}中的参数名可以任意，可以value或其它名称 -->
+    <!-- resultType：指定sql输出结果的所映射的java对象类型，select指定resultType表示将单条记录映射成的java对象。 -->
+    <!-- 表名要对，但是不区分大小写，resultType要写类名，同样不区分大小写 -->
+    <insert id="addUserRole" parameterType="UserRole">
+        INSERT INTO user_role (userId,roleId) VALUES (#{userId},#{roleId})
+    </insert>
+    <insert id="batchAddUserRole" parameterType="List">
+        INSERT INTO user_role (userId,roleId) VALUES
+        <foreach collection="list"  item="item" separator=",">
+            (#{item.userId},#{item.roleId})
+        </foreach>
+    </insert>
+    <select id="findRoleById" parameterType="int"  resultType="UserRole">
+        SELECT id,userId,roleId FROM user_role WHERE id = #{value}
+    </select>
+    <delete id="batchDeleteUserRole" parameterType="List" >
+        DELETE FROM user_role WHERE userId in
+        <foreach collection="list"  item="item" open="(" separator="," close=")"  >
+            #{item}
+        </foreach>
+    </delete>
+    <delete id="batchDeleteRoleUser" parameterType="List" >
+        DELETE FROM user_role WHERE roleId in
+        <foreach collection="list"  item="item" open="(" separator="," close=")"  >
+            #{item}
+        </foreach>
+    </delete>
+    <delete id="deleteUserRole" parameterType="int" >
+        DELETE FROM user_role WHERE userId=#{userId}
+    </delete>
+    <delete id="deleteRoleUser" parameterType="int" >
+        DELETE FROM user_role WHERE roleId=#{roleId}
+    </delete>
+    <!--<update id="editRole" parameterType="role" >
+        UPDATE user_role SET roleName=#{roleName} WHERE id = #{id}
+    </update>-->
+</mapper>

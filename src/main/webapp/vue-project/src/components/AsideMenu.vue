@@ -17,6 +17,10 @@
         <i class="fa fa-users"></i>
         <span slot="title">用户管理</span>
       </el-menu-item>
+      <el-menu-item index="/home/role">
+        <i class="fa fa-address-card"></i>
+        <span slot="title">角色管理</span>
+      </el-menu-item>
     </el-menu>
   </div>
 </template>

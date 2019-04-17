@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="Role">
+
+    <!-- 在映射文件中配置很多sql语句 -->
+    <!-- 将sql语句封装到mappedStatement对象中，所以将id称为statement的id -->
+    <!-- parameterType：指定输入参数的类型，这里指定int型 #{}表示一个占位符号 -->
+    <!-- #{id}：其中的id表示接收输入的参数，参数名称就是id，如果输入 -->
+    <!-- 参数是简单类型，#{}中的参数名可以任意，可以value或其它名称 -->
+    <!-- resultType：指定sql输出结果的所映射的java对象类型，select指定resultType表示将单条记录映射成的java对象。 -->
+    <!-- 表名要对，但是不区分大小写，resultType要写类名，同样不区分大小写 -->
+    <select id="findRoleById" parameterType="int"  resultType="role">
+        SELECT id,roleName FROM role WHERE id = #{value}
+    </select>
+    <select id="findRoleByName" parameterType="String"  resultType="role">
+        SELECT id,roleName FROM role WHERE roleName = #{value}
+    </select>
+    <select id="findRoleAll" parameterType="Map" resultType="role">
+        SELECT id,roleName FROM role
+        <where>
+            <if test="roleName!=null">
+                roleName LIKE "%"#{roleName}"%"
+            </if>
+        </where>
+    </select>
+    <select id="searchRole" parameterType="Map" resultType="role">
+        SELECT id,roleName FROM role
+        <where>
+            <if test="roleName!=null">
+                roleName LIKE "%"#{name}"%"
+            </if>
+        </where>
+    </select>
+    <insert id="addRole" parameterType="Map">
+        INSERT INTO role (roleName) VALUES (#{roleName})
+    </insert>
+    <delete id="batchDeleteRole" parameterType="List" >
+        DELETE FROM role WHERE id in
+        <foreach collection="list"  item="item" open="(" separator="," close=")"  >
+            #{item}
+        </foreach>
+    </delete>
+    <delete id="deleteRole" parameterType="int" >
+        DELETE FROM role WHERE id=#{id}
+    </delete>
+    <update id="editRole" parameterType="Map" >
+        UPDATE role SET roleName=#{roleName} WHERE id = #{id}
+    </update>
+</mapper>
