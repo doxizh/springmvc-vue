@@ -16,7 +16,7 @@
         SELECT id,name,nickname,createDate,updateDate FROM user WHERE id = #{value}
     </select>
     <select id="findUserByName" parameterType="String"  resultType="user">
-        SELECT name,password FROM user WHERE name = #{value}
+        SELECT * FROM user WHERE name = #{value}
     </select>
     <select id="findUserByNames" parameterType="List"  resultType="user">
         SELECT name FROM user WHERE name in

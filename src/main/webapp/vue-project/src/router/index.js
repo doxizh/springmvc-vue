@@ -47,7 +47,6 @@ const router = new Router({
 });
 router.beforeEach((to, from, next) => {
   let paths1 = ['Login', 'Register'];
-  console.log(store.state);
   let isLogin = store.state.isLogin;
   if (paths1.indexOf(to.name) > -1) {
     if (isLogin) {
@@ -56,13 +55,11 @@ router.beforeEach((to, from, next) => {
       });
       return;
     }
-  }else {
-    if (!isLogin) {
+  }else{
+    if (!isLogin&&from.name!==null) {
       router.replace({
         path: '/login',
-        query: {
-          redirect: to.fullPath,
-        }
+        query: {redirect: to.fullPath}
       });
       return;
     }

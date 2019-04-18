@@ -79,7 +79,7 @@
     },
     methods:{
       ...mapMutations([
-        'SAVE_USER_INFO',
+        'setUserInfo',
         'changeLoginStatus'
       ]),
       register(){
@@ -93,7 +93,7 @@
             this.$axios.post(this.$apis.register,postData).then(data=>{
               this.registerLoading=false;
               if(data.data.success){
-                this.SAVE_USER_INFO(data.data.result.userData);
+                this.setUserInfo(data.data.result.userData);
                 this.changeLoginStatus(true);
                 this.$router.push(this.$route.query.redirect||'home');
               }else {

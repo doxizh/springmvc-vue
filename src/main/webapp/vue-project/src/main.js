@@ -30,10 +30,13 @@ axios.interceptors.response.use(
   response => {
     if(response.data.code==="401"){
       store.commit('changeLoginStatus',false);
-      router.replace({
-        path: '/login',
-        query: {redirect: router.currentRoute.fullPath}
-      })
+      let paths = ['Login', 'Register'];
+      if(paths.indexOf(router.currentRoute.name)===-1){
+        router.replace({
+          path: '/login',
+          query: {redirect: router.currentRoute.fullPath}
+        })
+      }
     }
     return response;
   },
@@ -43,19 +46,22 @@ axios.interceptors.response.use(
         case 401:
           // 返回 401 清除token信息并跳转到登录页面
           store.commit('changeLoginStatus',false);
-          router.replace({
-            path: '/login',
-            query: {redirect: router.currentRoute.fullPath}
-          })
+          let paths = ['Login', 'Register'];
+          if(paths.indexOf(router.currentRoute.name)===-1){
+            router.replace({
+              path: '/login',
+              query: {redirect: router.currentRoute.fullPath}
+            })
+          }
       }
     }
     return Promise.reject(error.response.data)   // 返回接口返回的错误信息
   }
 );
-if(!window.isUnload){
+/*if(!window.isUnload){
   window.isUnload=true;
   store.commit('saveStateToLocal');
-}
+}*/
 Vue.config.productionTip = false;
 
 /* eslint-disable no-new */

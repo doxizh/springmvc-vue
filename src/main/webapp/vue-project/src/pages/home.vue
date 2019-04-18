@@ -27,6 +27,8 @@
     data() {
       return {}
     },
+    computed:{
+    },
     components:{
       HeaderTop,
       AsideMenu

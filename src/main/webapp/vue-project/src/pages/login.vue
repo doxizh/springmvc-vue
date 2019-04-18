@@ -60,32 +60,34 @@
     },
     methods:{
       ...mapMutations([
-        'SAVE_USER_INFO',
+        'setUserInfo',
         'changeLoginStatus'
       ]),
       login(){
-        this.$refs.loginForm.validate(valid=>{
-          if(valid){
-            let postData={
-              name:this.loginForm.name,
-              password:this.loginForm.password
-            };
-            this.loginLoading=true;
-            this.$axios.post(this.$apis.login,postData).then(data=>{
-              this.loginLoading=false;
-              if(data.data.success){
-                this.SAVE_USER_INFO(data.data.result.userData);
-                this.changeLoginStatus(true);
-                this.$router.push(this.$route.query.redirect||'home');
-              }
-            }).catch(()=>{
-              this.$notify.error({
-                message:"网络异常",
-              });
-              this.loginLoading=false;
-            })
-          }
-        });
+        if(!this.loginLoading){
+          this.$refs.loginForm.validate(valid=>{
+            if(valid){
+              let postData={
+                name:this.loginForm.name,
+                password:this.loginForm.password
+              };
+              this.loginLoading=true;
+              this.$axios.post(this.$apis.login,postData).then(data=>{
+                this.loginLoading=false;
+                if(data.data.success){
+                  this.setUserInfo(data.data.result.userData);
+                  this.changeLoginStatus(true);
+                  this.$router.push(this.$route.query.redirect||'home');
+                }
+              }).catch(()=>{
+                this.$notify.error({
+                  message:"网络异常",
+                });
+                this.loginLoading=false;
+              })
+            }
+          });
+        }
       }
     }
   }

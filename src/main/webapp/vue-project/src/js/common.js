@@ -4,6 +4,7 @@ const proxy=process.env.NODE_ENV === 'production' ? '/front' : '/api';
 const Common = {
   proxy: proxy,
   apis: {
+    getUserInfo: proxy+'/getUserInfo',
     findUserByIdTest: proxy+'/findUserByIdTest',
     findUserAll: proxy+'/findUserAll',
     login: proxy+'/login',
@@ -26,7 +27,7 @@ const Common = {
   axios: Axios,
   qs: Qs,
   async isLogin(){
-    return await Axios.post(proxy+Common.apis.isLogin)
+    return await Axios.post(Common.apis.isLogin)
   }
 };
 export default Common;

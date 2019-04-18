@@ -1,7 +1,5 @@
-import types from './types';
-
 const mutations = {
-  [types.SAVE_USER_INFO](state,obj) {
+  setUserInfo(state,obj) {
     state.userInfo=obj;
   },
   saveStateToLocal(state){
